@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html >
+  <head>
+  
+    <base target="_top">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <?!= swcadmin_common.includeSwcAdminExternalJsLibs()?>
+    
+     <?!= swcadmin_common.includeCommonMethods();?>
+     <?!= include('PageViewModel'); ?>
+      <?!= include('styling'); ?>
+  </head>
+  <body >
+    <div class="ios-fix">
+       <div class="container-fluid">
+           <div class="row">
+              <div class="col-md-4">           
+                      <section id="intro">
+                       <h3>Vejledning:</h3>
+                       xNår potentielle nye medlemmer har udfyldt indmeldelsesblanketten dukker de op i denne liste, og i status kolonenen står der 'Ubehandlet'.
+                       
+                       Indmeldelse foregår så på følgende måde:
+                       <ol>
+                         <li>Klik på 'Send invitationsmail'.<br>
+                         <small>Der sendes en mail med velkomst- og indbetalingsinformation ud fra invitationsmail skabelonen. Status kolonnen ændres nu til 'Sendt mail'</small>
+                         </li>
+                         <li>Tjek for svar her: <a href="https://mail.google.com/mail/u/0/#label/SWC+Admin%2FIndmeldelser" target="_blank">SWC Admin/Indmeldelser</a>. <br/>
+                         <small>I mailen bliver folk bedt om at svare på mailen med kvittering. Hvis de gør det korrekt (eg. de ikke ændre i subjektlinjen i mailen) vil deres svar ryge ind i mail folderen i linket ovenfor. 
+                         Man kan således nemt holde øje med svar i den folder for svar med kvittering. </small>
+                         </li>
+                         <li>Klik 'Godkend' eller 'Afvis'.<br>
+                         <small>Når de har svaret på mail med kvittering klikkes på 'Godkend' knappen ud for personen i listen. Herved overføres de til medlemslisten, og de modtager en bekræftelsesmail skabt ud fra nedenstående skabelon, med information om nøgleudlevring etc. Deres kvitteringsmail flyttes også til en processeret subfolder. Hvis folk ikke betaler eller direkte ikke ønsker at være medlem, kan man trykke 'afvis' og de fjernes fra listen.
+                         </small>
+                         </li>
+                         
+                       </ol>
+                       <div>NB: hvis folk ikke svarer direkte på mail med kvittering, men f.eks. forfatter en ny mail, ryger kvittering ud i inbox, og man skal således kigge der. Ved godkendelse 'fjernes' deres kvitteringsmail så heller ikke automatisk.</div>
+                       
+                  </section>
+              </div>
+              <div class="col-md-4">
+                 <section id="mailskabeloner">
+                  
+                  <h3>Skabeloner</h3>
+                  <table>         
+                  <tr>
+                  <td><a target="_blank" href="https://docs.google.com/document/d/1Dum6j6abXnxmdM7fTdjcbb9dDr27iHgVpwHLQkmiG0w/edit">Rediger invitationsmail skabelon</a></td>
+                  <td><button data-bind="click:sendInviteTestMail">send test mail (til swc@swc.dk)</button></td>
+                  </tr>
+                  <tr>
+                  <td><a target="_blank" href="https://docs.google.com/document/d/1v3Db4ulEM6qZzbWK4upxfXE9IuxI-BZyC3hyVNhUqFo/edit">Rediger bekræftelsesmail skabelon</a></td>
+                  <td><button data-bind="click:sendConfirmationTestMail">send test mail (til swc@swc.dk)</button></td>
+                  </tr>
+                  </table>
+                  </section>
+             </div>
+             <div class="col-md-4">
+                  <section id="logmessage" >
+                     <div data-bind="foreach:logMessages">
+                     <div>
+                     <span> - </span>
+                     <span data-bind="text:$data"></span>
+                     </div>
+                     </div>
+                     <div data-bind="visible:isCallingServer">
+                     <?!= swcadmin_common.includeWaiter();?>
+                     </div>
+                     
+                  </section>
+             </div>
+          </div>   
+          <div class="row">
+             <div class="col-md-12">
+                 <div class="table-responsive" >
+                     <table class="table table-striped table-condensed" id="indmeldelser" >
+                     <tbody data-bind="foreach:indmeldelser">
+                      <tr>
+                     <td><span data-bind="visible: $index() != 0, text: $index"></span></td>
+                     <td><button data-bind="visible: $index() != 0,enable:!$parent.isCallingServer()&& status()!='Indmeldt', click: function(){$parent.sendVelkomstMail($data.email)}">Send invitationsmail</button></td>
+                     <td><button data-bind="visible: $index() != 0,enable:!$parent.isCallingServer()&&status()!='Indmeldt', click: function(){$parent.indmeld($data.email)}">Godkend</button></td>
+                     <td><button data-bind="visible: $index() != 0,enable:!$parent.isCallingServer()&&status()!='Indmeldt', click: function(){$parent.afvis($data.email)}">Afvis</button></td>
+                     
+                     <td id="status" data-bind="text: status"></td>
+                     <td data-bind="text:fornavn"></td>
+                     <td data-bind="text:efternavn"> </td>
+                     <td data-bind="text:email"> </td>
+                     <td data-bind="text:telefon"> </td>
+                     <td data-bind="text:brugerklubudstyr"> </td>
+                     <td data-bind="text:bemaerkninger"> </td>
+                     <td data-bind="text:tidsstempel"> </td>
+                     </tr>
+                     
+                     </tbody>
+                    
+                     </table>
+                </div>
+             </div>         
+           </div>
+        </div>
+    </div>
+        
+    <script>
+     $(function(){
+        
+         ko.applyBindings(new PageViewModel());
+     });
+    </script>
+    
+  <?!=swcadmin_common.includeBootstrap();?>
+  </body>
+</html>
+
+
