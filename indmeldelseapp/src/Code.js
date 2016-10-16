@@ -173,4 +173,3 @@ function include(filename) {
 function testIndmeld() {
     indmeld("rlhtest@test.dk");
 }
-//# sourceMappingURL=Code.js.map

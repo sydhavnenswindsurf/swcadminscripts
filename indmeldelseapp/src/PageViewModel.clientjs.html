@@ -1,0 +1,69 @@
+<script type="text/javascript"> 
+"use strict";
+var knockout = require('knockout');
+var PageViewModel = (function () {
+    /**
+     *
+     */
+    function PageViewModel() {
+        this.isCallingServer = knockout.observable(false);
+        this.indmeldelser = knockout.observableArray([]);
+        this.logMessages = knockout.observableArray(["Vælg en handling"]);
+        this.loadIndmeldelser();
+    }
+    PageViewModel.prototype.indmeld = function (email) {
+        var _this = this;
+        this.isCallingServer(true);
+        callGoogleApi(function (result) {
+            return _this.feedBack(email, result);
+        }, this.defaultErrorHandler)
+            .indmeld(email);
+    };
+    PageViewModel.prototype.feedBack = function (email, result) {
+        this.isCallingServer(false);
+        if (result.success) {
+            $.each(this.indmeldelser().filter(function (item) { return item.email === email; }), function (index, item) {
+                item.status(result.newStatus);
+            });
+        }
+        this.logMessages.push(result.message);
+    };
+    PageViewModel.prototype.sendVelkomstMail = function (email) {
+        var _this = this;
+        this.isCallingServer(true);
+        callGoogleApi(function (result) { _this.feedBack(email, result); }, this.defaultErrorHandler)
+            .sendVelkomstMail(email);
+    };
+    PageViewModel.prototype.afvis = function (email) {
+        var _this = this;
+        this.isCallingServer(true);
+        callGoogleApi(function (result) { _this.feedBack(email, result); }, this.defaultErrorHandler)
+            .afvis(email);
+    };
+    PageViewModel.prototype.defaultErrorHandler = function (message) {
+        this.isCallingServer(false);
+        console.log(message);
+        alert(message);
+    };
+    PageViewModel.prototype.sendInviteTestMail = function () {
+        var _this = this;
+        callGoogleApi(function () { _this.logMessages.push("sendt test mail"); }, this.defaultErrorHandler).sendInviteTestMail();
+    };
+    PageViewModel.prototype.sendConfirmationTestMail = function () {
+        var _this = this;
+        callGoogleApi(function () { _this.logMessages.push("sendt test mail"); }, this.defaultErrorHandler).sendConfirmationTestMail();
+    };
+    PageViewModel.prototype.loadIndmeldelser = function () {
+        var _this = this;
+        callGoogleApi(function (result) {
+            _this.indmeldelser(result.map(function (item) {
+                item.status = knockout.observable(item.status);
+                return item;
+            }));
+        }, this.defaultErrorHandler).getUbehandledeIndmeldelser();
+    };
+    return PageViewModel;
+}());
+exports.PageViewModel = PageViewModel;
+
+</script>

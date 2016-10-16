@@ -1,6 +1,8 @@
 {
     "env": {
-        "browser": true
+        "browser": true,
+        "commonjs": true,
+        "es6": true
     },
     "extends": "eslint:recommended",
     "parserOptions": {
@@ -9,22 +11,22 @@
         }
     },
     "rules": {
-        
+        "no-console": 0,
         "indent": [
             "error",
-            "space"
+            "tab"
         ],
         "linebreak-style": [
             "error",
-            "windows"
+            "unix"
         ],
         "quotes": [
             "error",
-            "double"
+            "single"
         ],
         "semi": [
             "error",
-            "never"
+            "always"
         ]
     }
 }

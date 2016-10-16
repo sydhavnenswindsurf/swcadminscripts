@@ -16,8 +16,18 @@
     "url": "https://github.com/sydhavnenswindsurf/swcadminscripts/issues"
   },
   "homepage": "https://github.com/sydhavnenswindsurf/swcadminscripts#readme",
-  "dependencies": {
+  "devDependencies": {
+    "del": "^2.2.2",
+    "fs": "0.0.1-security",
+    "gulp": "^3.9.1",
+    "gulp-cached": "^1.1.0",
+    "gulp-each": "^0.2.0",
+    "gulp-ext-replace": "^0.3.0",
+    "gulp-filelog": "^0.4.1",
+    "gulp-load-plugins": "^1.3.0",
+    "gulp-typescript": "^3.0.2",
+    "typescript": "^2.0.3",
+    "vinyl-paths": "^2.1.0"
     
   }
-
 }
