@@ -1,0 +1,11 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/typed-contrib/knockout.mapping/ea8c41fd6736738b8987f66187cb0b4851e0d15c/typings.json",
+    "raw": "registry:npm/knockout.mapping#2.0.0+20160319005119",
+    "main": "index.d.ts",
+    "version": "^2.0.0",
+    "name": "knockout.mapping",
+    "type": "typings"
+  }
+}

@@ -1,7 +1,8 @@
 {
   "name": "swcapps",
   "dependencies": {
-    "knockout": "registry:npm/knockout#3.4.0+20160516171930"
+    "knockout": "registry:npm/knockout#3.4.0+20160516171930",
+    "knockout.mapping": "registry:npm/knockout.mapping#2.0.0+20160319005119"
   },
   "globalDependencies": {
     "core-js": "registry:dt/core-js#0.0.0+20160914114559",
@@ -16,6 +17,9 @@
     "google-apps-script/google-apps-script.script": "registry:dt/google-apps-script/google-apps-script.script#0.0.0+20160316171810",
     "google-apps-script/google-apps-script.spreadsheet": "registry:dt/google-apps-script/google-apps-script.spreadsheet#0.0.0+20160316171810",
     "google-apps-script/google-apps-script.types": "registry:dt/google-apps-script/google-apps-script.types#0.0.0+20160316171810",
-    "google-apps-script/google-apps-script.ui": "registry:dt/google-apps-script/google-apps-script.ui#0.0.0+20160316171810"
+    "google-apps-script/google-apps-script.ui": "registry:dt/google-apps-script/google-apps-script.ui#0.0.0+20160316171810",
+    "google-apps-script/google-apps-script.utilities": "registry:dt/google-apps-script/google-apps-script.utilities#0.0.0+20160316171810",
+    "jquery": "registry:dt/jquery#1.10.0+20160929162922",
+    "react": "registry:dt/react#0.14.0+20161008064207"
   }
 }
