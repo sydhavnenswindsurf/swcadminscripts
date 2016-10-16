@@ -1,0 +1,23 @@
+{
+  "name": "swcapps",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sydhavnenswindsurf/swcadminscripts.git"
+  },
+  "author": "rlh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sydhavnenswindsurf/swcadminscripts/issues"
+  },
+  "homepage": "https://github.com/sydhavnenswindsurf/swcadminscripts#readme",
+  "dependencies": {
+    
+  }
+
+}

@@ -9,29 +9,31 @@ var NEWMEMBERS_SHEETID = PropertiesService.getScriptProperties().getProperty("Ne
 var INVITATIONS_MAILTEMPLATE = PropertiesService.getScriptProperties().getProperty("InvitationsMailSkabelonId");
 var CONFIRMATION_MAILTEMPLATE = PropertiesService.getScriptProperties().getProperty("ConfirmationMailTemplateId");
 var _swcEmail = PropertiesService.getScriptProperties().getProperty("swcemail");
-function doGet() {
-    return buildGui();
+
+function doGet(): any{
+   return buildGui();
 }
-function buildGui() {
+function buildGui(): any { 
     var html = HtmlService.createTemplateFromFile('main');
     var result = html.evaluate()
-        .setSandboxMode(2);
+        .setSandboxMode(2); 
     return result;
+ 
 }
-function getUbehandledeIndmeldelser() {
-    var data = _getSheetData()
+function getUbehandledeIndmeldelser(): any{
+     var data = _getSheetData()
         .getValues()
-        .filter(function (row) {
+        .filter( (row)=> {
         var status = row[COLUMN_STATUS];
         return DONE_STATUS.indexOf(status) === -1;
     })
-        .map(function (row) {
+        .map((row)=> {
         if (row[COLUMN_STATUS] === "") {
             row[COLUMN_STATUS] = "Ubehandlet";
         }
-        return row;
+        return row; 
     });
-    var returData = data.map(function (row) {
+    var returData = data.map((row)=> {
         return {
             status: row[COLUMN_STATUS],
             email: row[5],
@@ -44,8 +46,10 @@ function getUbehandledeIndmeldelser() {
         };
     });
     return returData;
+
 }
-function indmeld(email) {
+function indmeld(email: any): any{
+   
     var stamdata = medlemmer_common.getMedlemmerStamdata();
     if (medlemmer_common.erMedlem(email, stamdata)) {
         throw email + " er allerede registreret som medlem";
@@ -60,7 +64,7 @@ function indmeld(email) {
         newStatus: INDMELDT_STATUS
     };
 }
-function afvis(email) {
+function afvis(email: any): any{
     _setNewStatus(email, "Afvist");
     swcadmin_common.moveMail(email, "SWC Admin/Indmeldelser", "SWC Admin/Indmeldelser/Processeret");
     return {
@@ -68,17 +72,19 @@ function afvis(email) {
         message: "ok fjernede " + email + " fra indmeldelseslisten",
         newStatus: "Afvist"
     };
-}
-function _getSheetData() {
-    var sheet = SpreadsheetApp
+} 
+ 
+ function _getSheetData(): any{
+     var sheet = SpreadsheetApp
         .openById(NEWMEMBERS_SHEETID)
         .getSheetByName("Formularsvar 1");
     var data = sheet
         .getDataRange();
     return data;
-}
-function sendVelkomstMail(email) {
-    var data = _getSheetData().getValues().filter(function (item) { return item[COLUMN_EMAIL] === email; });
+
+ }
+function sendVelkomstMail(email: any): any {
+   var data = _getSheetData().getValues().filter((item) => { return item[COLUMN_EMAIL] === email; });
     if (data.length < 1) {
         return buildError("Der kunne ikke findes nogen indmeldelser for e-mailen: " + email, email);
     }
@@ -96,20 +102,23 @@ function sendVelkomstMail(email) {
         return buildError(e, email);
     }
 }
-function _setNewStatus(email, status) {
-    var rowId = _getSheetData()
+
+
+function _setNewStatus(email: any, status: string): any{
+
+   var rowId = _getSheetData()
         .getValues()
-        .map(function (row) { return row[COLUMN_EMAIL]; })
+        .map((row)=> { return row[COLUMN_EMAIL]; })
         .indexOf(email) + 1;
     var sheet = SpreadsheetApp
         .openById(NEWMEMBERS_SHEETID)
         .getSheetByName("Formularsvar 1");
-    sheet.getRange(rowId, 1).setValue(status);
+    sheet.getRange(rowId, 1).setValue(status); 
 }
-function _overfoerIndmeldelsesData(email) {
-    var values = _getSheetData().getValues();
+ function _overfoerIndmeldelsesData(email: any): any{
+ var values = _getSheetData().getValues();
     var nytmedlem = values
-        .filter(function (item) { return item[COLUMN_EMAIL] === email; })[0];
+        .filter((item)=> { return item[COLUMN_EMAIL] === email; })[0];
     //første: fornavn D - index 3
     //sidste: tidstempel J - index 9
     var erUdmeldt = false;
@@ -138,39 +147,50 @@ function _overfoerIndmeldelsesData(email) {
         medlemmer_common.addStamdataForMedlem(email, stamdata);
     }
     return nytmedlem;
+
+
 }
-function sendInviteTestMail() {
-    doSendInviteMail(_swcEmail, "SWC fornavn", "SWC efternavn");
+function sendInviteTestMail(): void {
+
+        doSendInviteMail(_swcEmail, "SWC fornavn", "SWC efternavn");
+
 }
-function doSendInviteMail(email, fornavn, efternavn) {
-    swcadmin_common.sendDocument(INVITATIONS_MAILTEMPLATE, {
+function doSendInviteMail(email: any, fornavn: any, efternavn: any): void{
+ swcadmin_common.sendDocument(INVITATIONS_MAILTEMPLATE, {
         email: email,
         fornavn: fornavn,
         efternavn: efternavn
     }, email, "Velkommen til SWC");
+
 }
-function sendConfirmationTestMail() {
-    doSendConfirmationMail(_swcEmail, "SWC fornavn", "SWC efternavn");
+ function sendConfirmationTestMail(): void{
+     doSendConfirmationMail(_swcEmail, "SWC fornavn", "SWC efternavn");
 }
-function doSendConfirmationMail(email, fornavn, efternavn) {
-    swcadmin_common.sendDocument(CONFIRMATION_MAILTEMPLATE, {
+ function doSendConfirmationMail(email: any, fornavn: any, efternavn: any): void{
+      swcadmin_common.sendDocument(CONFIRMATION_MAILTEMPLATE, {
         email: email,
         fornavn: fornavn,
         efternavn: efternavn,
     }, email, "Du er nu blevet meldt ind i SWC");
-}
-function buildError(message, context) {
-    return {
+
+ }
+ function buildError(message: any, context: any): any{
+  return {
         success: false,
         message: "Error occured for " + context + ": " + message
     };
 }
-function include(filename) {
-    return HtmlService.createHtmlOutputFromFile(filename)
+function include(filename: any): any{
+      return HtmlService.createHtmlOutputFromFile(filename)
         .getContent();
 }
+
+
+
 //TESTS
-function testIndmeld() {
+
+function testIndmeld(): void{
     indmeld("rlhtest@test.dk");
+
+
 }
-//# sourceMappingURL=Code.js.map
