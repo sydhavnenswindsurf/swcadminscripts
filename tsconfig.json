@@ -4,7 +4,8 @@
         "target": "es5",
         "module": "commonjs",
         "sourceMap": true,
-        "jsx": "preserve"
+        "jsx": "preserve",
+        "noImplicitReturns": true
     }, 
     "exclude": [
         "node_modules",

@@ -1,4 +1,5 @@
-import * as knockout from 'knockout';
+/// <reference path="../../index.d.ts" />
+
 export class PageViewModel{
     /**
      *
@@ -7,9 +8,9 @@ export class PageViewModel{
          this.loadIndmeldelser();
 
     }
-     isCallingServer  = knockout.observable<Boolean>(false);
-     indmeldelser = knockout.observableArray([]);    
-      logMessages = knockout.observableArray(["Vælg en handling"]);
+     isCallingServer  = ko.observable<Boolean>(false);
+     indmeldelser = ko.observableArray([]);    
+      logMessages = ko.observableArray(["Vælg en handling"]);
     public  indmeld (email:string){
            this.isCallingServer(true);
            callGoogleApi((result)=> 
@@ -55,7 +56,7 @@ export class PageViewModel{
       private loadIndmeldelser (){
           callGoogleApi((result)=>{
              this.indmeldelser(result.map((item)=>{
-                item.status =knockout.observable(item.status);
+                item.status =ko.observable(item.status);
                 return item;
              }));
           },this.defaultErrorHandler).getUbehandledeIndmeldelser();

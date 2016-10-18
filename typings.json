@@ -1,9 +1,7 @@
 {
   "name": "swcapps",
   "devDependencies": {
-    "gulp": "registry:npm/gulp#4.0.0-alpha.2+20160817105618",
-    "knockout": "registry:npm/knockout#3.4.0+20160516171930",
-    "knockout.mapping": "registry:npm/knockout.mapping#2.0.0+20160319005119"
+    "gulp": "registry:npm/gulp#4.0.0-alpha.2+20160817105618"
   },
   "globalDevDependencies": {
     "core-js": "registry:dt/core-js#0.0.0+20160914114559",
@@ -22,6 +20,8 @@
     "google-apps-script/google-apps-script.utilities": "registry:dt/google-apps-script/google-apps-script.utilities#0.0.0+20160316171810",
     "gulp-typescript": "registry:dt/gulp-typescript#0.0.0+20160317120654",
     "jquery": "registry:dt/jquery#1.10.0+20160929162922",
+    "knockout": "registry:dt/knockout#0.0.0+20160914182733",
+    "knockout.mapping": "registry:dt/knockout.mapping#2.0.0+20160316155526",
     "node": "registry:dt/node#6.0.0+20161014191813",
     "react": "registry:dt/react#0.14.0+20161008064207"
   }

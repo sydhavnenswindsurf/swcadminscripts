@@ -1,14 +1,14 @@
 <script type="text/javascript"> 
+/// <reference path="../../index.d.ts" />
 "use strict";
-var knockout = require('knockout');
 var PageViewModel = (function () {
     /**
      *
      */
     function PageViewModel() {
-        this.isCallingServer = knockout.observable(false);
-        this.indmeldelser = knockout.observableArray([]);
-        this.logMessages = knockout.observableArray(["Vælg en handling"]);
+        this.isCallingServer = ko.observable(false);
+        this.indmeldelser = ko.observableArray([]);
+        this.logMessages = ko.observableArray(["Vælg en handling"]);
         this.loadIndmeldelser();
     }
     PageViewModel.prototype.indmeld = function (email) {
@@ -57,7 +57,7 @@ var PageViewModel = (function () {
         var _this = this;
         callGoogleApi(function (result) {
             _this.indmeldelser(result.map(function (item) {
-                item.status = knockout.observable(item.status);
+                item.status = ko.observable(item.status);
                 return item;
             }));
         }, this.defaultErrorHandler).getUbehandledeIndmeldelser();
