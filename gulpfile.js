@@ -9,8 +9,10 @@ var typeScriptFilesGlob = ['*/src/**/*.ts'];
 
 gulp.task('tsc', function () {
 	return tsProject.src()
+	    .pipe(p.sourcemaps.init())
         .pipe(tsProject())
         .js
+		.pipe(p.sourcemaps.write('.'))
 		.pipe(gulp.dest(function (f) {			
 			return f.base; 
 		}));
