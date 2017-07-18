@@ -17,4 +17,3 @@
 /// <reference path="globals/knockout.mapping/index.d.ts" />
 /// <reference path="globals/knockout/index.d.ts" />
 /// <reference path="globals/node/index.d.ts" />
-/// <reference path="globals/react/index.d.ts" />

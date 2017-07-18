@@ -1,6 +1,6 @@
 /// <reference path="../../index.d.ts" />
 
-export class PageViewModel{
+class PageViewModel{
     /**
      *
      */

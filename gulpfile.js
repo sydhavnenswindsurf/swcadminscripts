@@ -32,7 +32,6 @@ gulp.task('creategsajs',['tsc'],function(){
 	}));	
 });
 
-
 gulp.task('watch', function(){
 	gulp.watch(typeScriptFilesGlob, defaultTaskSpec);
 });

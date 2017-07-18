@@ -1,3 +1,4 @@
+
 var COLUMN_STATUS = "0";
 var COLUMN_FORNAVN = "3";
 var COLUMN_EFTERNAVN = "4";

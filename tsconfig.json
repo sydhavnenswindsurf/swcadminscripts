@@ -4,7 +4,7 @@
         "module": "commonjs",
         "sourceMap": true,
         "jsx": "preserve",
-        "noImplicitReturns": true
+        "noImplicitReturns": true        
     }, 
     "exclude": [
         "node_modules",
