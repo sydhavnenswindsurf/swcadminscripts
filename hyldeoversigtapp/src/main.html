@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta name="viewport" content="width=device-width">
+    <base target="_top">
+    <?!=swcadmin_common.includeSwcAdminExternalJsLibs();?>
+  </head>
+  <body>
+  <h3><a href="https://docs.google.com/spreadsheets/d/1Vcy0CizohZHLfCQuxU39J0nDix_kZ15oJVaX5IPMc24/pubhtml" target="_blank">Visuel hyldeoversigt</a> </h3>
+      <div>
+         Bemærk at når du tilføjer og fjerner medlemmer, kan der gå et par minutter inden den visuelle oversigt opdateres.
+      </div>
+   <section id="hylder">
+   <div data-bind="visible: isCallingServer">
+      <?!= swcadmin_common.includeWaiter(); ?>
+   </div>  
+   <section id="container-view" data-bind="foreach: groupedHylder" style="overflow:visible;">
+   <div class="container">
+      <h2 data-bind="text: groupName"></h2>
+     <table data-bind="foreach: values">
+       <tr data-bind="css: { ledig: navn() == '' }">
+         <td data-bind="text:hyldenr"></td>
+         <td data-bind="text: container"></td>
+         <td>
+              <input placeholder="Indtast e-mail adresse" class="new-owner" type="text" data-bind="visible: navn()=='', value:newOwner">
+              <div data-bind="visible: email != ''">
+               <p class="navn" data-bind="text: navn"></p> <p class="email" data-bind="text: '(' + email+')'"></p> 
+              </div>
+             
+         </td> 
+         <td> 
+             <button class="add" data-bind="enable: !$root.isCallingServer(),visible: navn()=='', click:function(){$root.add($data);}">Tilføj</button>
+             <button class="remove" data-bind="enable: !$root.isCallingServer(),visible: navn()!='', click:function (){$root.remove($data);}">Fjern</button>
+             </td>
+             
+         </tr>
+      </table>
+   </div>
+  
+   </section>
+     
+   </section>
+   <?!= include('style'); ?>
+  <?!= include('PageViewModel'); ?>
+  <script>
+  $(function(){
+       ko.applyBindings(new PageViewModel());
+  });
+  </script>
+  </body>
+  
+</html>
+
+
