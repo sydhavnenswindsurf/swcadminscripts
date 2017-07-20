@@ -1,0 +1,68 @@
+<script type="text/javascript"> 
+  function PageViewModel(allEmails){
+      var self = this;
+      
+      self.currentProcessMessage =ko.observable("");
+      self.isLoading= ko.observable(false);
+      self.notFoundMessages = ko.observableArray([]);
+      self.udmeldtMessages = ko.observableArray([]);
+      self.emailToProcess=allEmails;
+      
+      self.feedback= function(result){
+         console.log("back from udmeld");
+         console.log(result);
+          if(result.udmeldt){
+            self.udmeldtMessages.push("Har nu markeret følgende som udmeldt: "+ result.email);
+          }
+          if(result.notFound){
+              self.notFoundMessages.push("Kunne ikke finde adressen på medlemmet: " + result.email);
+          }
+          
+          //remove
+          self.emailToProcess.splice(self.emailToProcess.indexOf(result.email), 1);
+          
+          //stop or continue
+          if(self.emailToProcess.length==0){
+             self.isLoading(false);
+             self.currentProcessMessage("");
+          }else{
+             self.beginUdmeld(self.emailToProcess[0]);
+          }
+          
+      };
+      
+      self.beginUdmeld=function(email){
+               self.currentProcessMessage("Udmelder "+email+"...");
+               google.script.run
+               .withSuccessHandler(self.feedback)
+               .udmeld(email);
+      }
+      self.bulkUdmeld = function(){
+            if(self.emailToProcess.length==0){
+               console.log("no more mails to process");
+               alert('Alle på siden er udmeldt nu');
+               return;
+            }
+            self.clearMessages();
+            self.isLoading(true);
+            self.beginUdmeld(self.emailToProcess[0]);
+
+      };
+      self.clearMessages = function(){
+         self.notFoundMessages([]);
+         self.udmeldtMessages([]);
+      }
+      
+      self.updateLabel=function(){
+      
+      }
+      
+      self.udmeld = function(email){
+            google.script.run.withSuccessHandler(self.feedback)
+             .udmeld(email);
+
+      };
+  }
+</script>
+  
+
