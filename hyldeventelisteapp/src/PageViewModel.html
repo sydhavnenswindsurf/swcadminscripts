@@ -1,0 +1,158 @@
+<script type="text/javascript"> 
+  function PageViewModel(){
+     var self = this;
+     this.isCallingServer = ko.observable(false);
+     self.toast =ko.observable("");     
+     
+     self.isInviting  = ko.observable(false);
+     self.reserveretHylder = ko.observableArray([]);
+     self.selectedHylde = ko.observable("");
+     self.isLoadingVenteliste = ko.observable(true);
+     self.venteliste =  ko.observableArray([]);
+     
+     self.isLoadingHylder = ko.observable(true);
+     self.ledigeHylder= ko.observableArray([]);
+     
+     self.defaultErrorHandler =function(result){
+        console.log(result);
+        alert(result);
+     }
+     self.firstMemberInLine = ko.computed(function(){
+           
+           var medlemmerPaaVenteListe = self.venteliste().filter(function(item){
+           
+               return !item.hasReservation()}
+               );
+           var firstMember= medlemmerPaaVenteListe.length>0 ? medlemmerPaaVenteListe[0] : "";
+           
+           return firstMember;
+     },self);
+     self.loadVenteliste = function(){
+           console.log("loader venteliste..");
+           callGoogleApi(function(venteliste){
+                self.venteliste(venteliste.map(function(item){
+                    item.hasReservation = ko.observable(item.hasReservation);
+                    return item;
+                }));
+                console.log(self.venteliste());
+                self.isLoadingVenteliste(false);
+           }, self.defaultErrorHandler).loadVenteliste();
+         
+    }
+     
+     
+     self.loadHylder = function(){
+         console.log("loader available hylder..");
+           google.script.run.withSuccessHandler(function(hylder){
+                console.log(hylder);
+                self.ledigeHylder(hylder.ledigeHylder);
+                if(hylder.ledigeHylder.length>0){
+                    self.selectedHylde(hylder.ledigeHylder[0].hyldenr);
+                }
+                console.log("reserveret hylder:"); 
+                console.log(hylder.reserveretHylder);
+                self.reserveretHylder(hylder.reserveretHylder);
+                
+                self.isLoadingHylder(false);
+           }).loadLedigeHylder();
+         
+    }
+   self.sendInvite =function(){
+        if(self.selectedHylde()==='')
+         {
+            alert('Du skal vælge en hylde..');
+            return;
+         }
+         var hyldeReservation= {
+            hyldenr: self.selectedHylde(),
+            medlem: ko.mapping.toJS(self.firstMemberInLine)
+         };
+         
+         self.isInviting(true);
+         console.log(hyldeReservation);
+         google.script.run.withSuccessHandler(function(result){
+         
+             if(result.success){
+               self.reserveretHylder.push({email:hyldeReservation.medlem.email, hyldenr: hyldeReservation.hyldenr});
+               self.firstMemberInLine().hasReservation(true);
+               
+               self.ledigeHylder.remove( function (item) { return item.hyldenr== hyldeReservation.hyldenr; } );
+               
+               
+               self.toast("Sendt hylde invite til " + hyldeReservation.medlem.navn + '('+ hyldeReservation.medlem.email+')');
+               self.venteliste.valueHasMutated();
+               
+               
+            }
+               self.isInviting(false);
+           }).sendInvite(hyldeReservation);
+         
+   }
+   
+   self.removeFromList = function(email){
+       if(!confirm("Dette fjerner "+email+" fra ventelisten. Ok?")){
+            return;
+        }
+       google.script.run.withSuccessHandler(function(result){         
+             if(result.success){
+                
+                 self.venteliste.remove( function (item) { return item.email== email; } );
+                 self.toast(email + " blev fjernet fra ventelisten");            
+             }
+             
+           }).removeFromList(email);
+      
+   }
+   
+    self.frigivHylde =function(reservation){
+        if(!confirm("Dette ophæver reservationen af hylden så andre kan få den. Ok?")){
+            return;
+        }
+        console.log(reservation);
+         google.script.run.withSuccessHandler(function(result){         
+             console.log(result);
+             if(result.success){             
+                 self.ledigeHylder(result.updatedHyldeInfo.ledigeHylder);
+                 self.reserveretHylder(result.updatedHyldeInfo.reserveretHylder);
+                 
+                 $.each(self.venteliste().filter(function(medlem){
+                     return medlem.email==reservation.email;
+                 }),function(index,medlem){
+                     console.log("releaseing reservatiion on member");
+                     console.log(medlem);
+                     medlem.hasReservation(false);
+                 });
+                 self.toast("hylden blev frigivet fra ventelisten");
+             }
+             
+           }).frigivHylde(reservation);
+    }
+    self.tildelHylde=function(reservation){
+          if(!confirm("Tildel hylde "+reservation.hyldenr +" til "+ reservation.email+ "?\n"+ "De skal være meldt ind, og have betalt for hylden.")){
+              return;
+          }
+          self.isCallingServer(true);
+          google.script.run.withSuccessHandler(function(result){         
+             console.log(result);
+              if(result.success){             
+                self.toast("Hylden er blevet korrekt tildelt, og der er sendt en bekræftelses mail.");
+                self.loadHylder();
+                
+              }
+              self.isCallingServer(false);
+           }).withFailureHandler(function(message){
+            console.log(message);          
+            alert(message);
+            self.isCallingServer(false);
+          }).tildelHylde(reservation);
+    }
+    
+    self.loadHylder();
+    self.loadVenteliste();
+  }
+</script>
+  
+
+
+
+

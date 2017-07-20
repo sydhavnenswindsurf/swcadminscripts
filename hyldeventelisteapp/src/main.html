@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+       <?!= swcadmin_common.includeSwcAdminExternalJsLibs(); ?> 
+       <?!= swcadmin_common.includeCommonMethods();?>
+  </head>
+  <body>
+  Denne side giver overblik over hyldeventeliste og viser hvilke hylder der er ledige.
+  Man kan reservere en hylde til en på venteliste. Reserverede hylder listede til højre.
+   <section id="messages" data-bind="text:toast"></section>
+   <hr/>
+   <h3><a href="https://docs.google.com/spreadsheets/d/1Vcy0CizohZHLfCQuxU39J0nDix_kZ15oJVaX5IPMc24/pubhtml" target="_blank">Visuel hyldeoversigt</a> </h3>
+      
+   <section id="controlpanel" data-bind="visible: venteliste().length>0 && firstMemberInLine()!=''">
+           Reserver hylde og send mail til næste medlem på listen: 
+           <span class="next" data-bind="text: firstMemberInLine().navn + '('+ firstMemberInLine().email+')'"></span>
+           <div>
+           Vælg hylde: <select data-bind="options: ledigeHylder().map(function(item){return item.hyldenr;}), value: selectedHylde"></select>
+           <button data-bind="click: sendInvite">Send mail og reserver hylde</button>
+           </div>
+           
+           <div data-bind="visible:isInviting"><?!= swcadmin_common.includeWaiter(); ?></div>
+   </section>
+   <section id="no-controlpanel" data-bind="visible: !isLoadingVenteliste() && (venteliste().length==0 ||firstMemberInLine()=='')">
+       Enten er der ingen på venteliste, eller har de allerede få reserveret en hylde og afventer svar.
+   </section>
+    <hr/>
+  <section id="waitlist">
+      <div data-bind="visible: isLoadingVenteliste">
+             <div class="waiter-image ventelistewaiter"></div>
+             <span>Loader venteliste....</span>
+       </div>
+      
+       
+       <h2 data-bind="visible: !isLoadingVenteliste()">Hyldeventeliste</h2>
+       <ol data-bind="foreach: venteliste()">
+          <li>
+          <table>
+             <tr>
+                <td>
+                   <span data-bind="text:navn"></span> 
+                   <span class="warning" data-bind="visible: erIkkeMedlem"> - ikke medlem</span>
+                   <span class="reservationExists" data-bind="visible: ('hasReservation' in $data) && hasReservation"> - afventer svar på hylde reservation</span>
+                   
+                   </td>
+             </tr>
+             <tr>
+                <td >
+                <span data-bind="text:email"></span>
+                </td>
+             </tr>
+             <tr>
+             <td>Oprettet d. <span data-bind="text:tidsstempel"></span></td>
+             </tr>
+             <tr>
+              <td class="comments" data-bind="text:comments">
+               </td>
+             </tr>
+             <tr>
+                 <td>Evt. ønsker: <span data-bind="text:oensket_container"></span><span data-bind="text:oensket_hylde"></span></td>
+                 
+             </tr>
+             <tr>
+             <td>
+             <button data-bind="click: function(){$parent.removeFromList($data.email)}">Fjern fra venteliste</button>
+             </td>
+                </tr>
+               
+          </table>
+          </li>
+      </ol>
+  </section>
+  <div class="right">
+
+   <section id="hyldeoversigt">        
+         <div data-bind="visible: isLoadingHylder">
+             <div class="waiter-image hylderwaiter"></div>
+             <span>Finder ledige hylder....</span>
+         </div>
+         <h2 data-bind="visible: !isLoadingHylder()">Oversigt over ledige hylder</h2>
+         <div data-bind="visible: ledigeHylder().length<=1">Alle hylder er enten optaget eller reserveret.</div>
+         <table data-bind="foreach: ledigeHylder">                 
+              <tr>
+                 <td data-bind="text: container">                   
+                  </td>
+                   <td data-bind="text: hyldenr">
+                  </td>
+                 
+             </tr>       
+         </table>
+         <div data-bind="visible: !isLoadingHylder()">
+         <h2 >Reserverede hylder</h2>
+         </div>
+            Vedrørende de mails der udsendes fra denne side, er der sat mail filter op på svarene så de meget gerne skulle smides i folderen 
+            <a href="https://mail.google.com/mail/u/0/#label/SWC+Admin%2FLedig+hylde" target="_blank">SWC Admin/Ledige hylder. Du kan klikke på dette link for at gå direkte til den mail folder, og tjekke om der er kommet svar.</a>
+         <div>
+               <table>
+               <thead data-bind="visible: !isLoadingHylder()">
+               <tr>
+                  <td>Hylde nr</td>
+                  <td>reserveret til</td>
+                  <td>Dato</td>
+                  <td></td>
+                  <td></td>                  
+               </tr>
+               
+               </thead>
+              <tbody data-bind="foreach: reserveretHylder">
+               <tr>
+                 
+                   <td data-bind="text: hyldenr">
+                  </td>
+                  <td data-bind="text: email"> 
+                  
+                  </td>
+                  <td data-bind="text: reserveretDato"></td>
+                  <td >
+                     <button data-bind="click: function(){$parent.frigivHylde($data)}">Frigiv igen </button>
+                  </td>
+                  <td >
+                     <button data-bind="click: function(){$parent.tildelHylde($data)}">Tildel hylde og send bekræftelse</button>
+                  </td>
+             </tr>       
+              
+              </tbody>
+              
+         </table>
+         
+         </div>
+  </section>
+    <section id="skabeloner">
+  <h2> Mail skabeloner</h2>
+    <table>
+       <ul>
+          <li><a target="_blank" href="https://docs.google.com/document/d/1Kgo7WGLOQkm_hscTNjLb7ucovmCqE1wy0QHADO_Nw_Y/edit">Reservationsmail skabelon</a></li>
+           <li><a target="_blank" href="https://docs.google.com/document/d/1hZ62lKRZi7e8uu55Isq32SlxKgJfuzxyburQel_ndvE/edit">Hyldebekræftelse skabelon</a></li>
+       
+       </ul>
+    
+    </table>
+  </section>
+  </div>
+ 
+     
+   <?!= include('style'); ?>
+  <?!= include('PageViewModel'); ?>
+  <script>
+  $(function(){
+       ko.applyBindings(new PageViewModel());
+  });
+  </script>
+  </body>
+  
+</html>
+
+
