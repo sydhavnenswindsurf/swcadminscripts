@@ -1,0 +1,109 @@
+<html>
+  <head>
+    <base target="_top">
+     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <?!=swcadmin_common.includeBootstrapCss();?>
+    <?!= include('style'); ?>
+    
+    <?!= swcadmin_common.includeSwcAdminExternalJsLibs()?>
+    
+    <?!= swcadmin_common.includeCommonMethods(); ?>
+    <?!= include('PageViewModel'); ?>
+      
+  <script>
+  $(function(){
+       ko.applyBindings(new PageViewModel());
+  });
+  
+
+  </script>
+  </head>
+  <body>
+  
+<div class="container-fluid">
+ <div class="row">
+     <section>      
+
+            <div id="output"></div>
+            <form method="POST" id="csvUpload" data-bind="submit: createNewRapport">
+            Generer ny rapport ved at uploade et .CSV udtræk fra banken her:
+            <input type="file" value="Vælg .csv fil" name="csv"> 
+            
+            <input type="submit" value="Upload .csv">           
+            <span data-bind="visible:isCallingServer">
+            <?!= swcadmin_common.includeWaiter();?>
+            </span>
+            
+            </form>
+     </section>
+     <div>
+        Yderligere kan du manuelt registrere folk ved at lægge deres mail adresser i første kolonne i arket her:
+        <a href="https://docs.google.com/spreadsheets/d/1jG_wguUwaNUAuRz6z_o8y4Cd4ZoUoc-zCRau7dWxrkg/edit#gid=0" target="_blank">Manuelle registreringer</a>
+     </div>
+ </div>
+    <hr/>
+<div class="row"> 
+    <ul data-bind="foreach: sortedRapportList">
+    <li><a target="_blank" data-bind="attr:{href:url}, text:name"></a></li>
+    </ul>
+
+</div>
+  <hr/>
+<div class="row" id="latestnumbers" data-bind="visible: shouldShowLastRapport,with:lastRapport">
+  <div class="col-sm-12">
+     <h2>Dårlige betalere</h2> 
+      
+      
+     <div>
+         Viser medlemmer der ikke har betalt fra rapport <a data-bind="attr:{href:url}" target="_blank"><span data-bind="text: name"> </span></a>
+     </div>
+     
+     <select data-bind="options:$root.rapportParts, value: $root.selectedRapport" ></select>
+     <div>
+        <h3 data-bind="text:$root.selectedRapport"></h3>
+        
+        <div>
+           <button class="btn btn-primary" data-bind="enable: $root.canUdmeld() && !$root.isDoingAction(), click: $root.udmeld">Udmeld</button>
+           <span data-bind="visible:$root.isDoingAction">
+            <?!= swcadmin_common.includeWaiter();?>
+            </span>
+        </div>
+       <table class="table table-inverse table-striped">
+          <thead class="thead-inverse">
+          <tr scope="row">
+           <th></th>
+           <th>#</th>
+          <th>Email</th>
+          <th>navn</th>
+          <th>Antal hylder</th>
+          <th><span data-bind="text:$root.isLoadingLastActivity()? 'Scanner mails for seneste modtaget mail': 'Sidst modtaget e-mail'"></span>
+          <span data-bind="visible:$root.isLoadingLastActivity">
+            <?!= swcadmin_common.includeWaiter();?>
+            </span>
+            </th>
+         <th>Fornavn forekommer i indbetalinger (dette er ikke ensbetydende med at det er den person, og det skal verificeres ved at åbne rapporten og tjekke)</th>
+          </tr>
+          </thead>
+          <tbody data-bind="foreach: $parent.sortedCurrentPart">
+          
+             
+             <tr data-bind="attr:{ scope: $index}">
+              <td><input type="checkbox" data-bind="checked: doUdmeld"><span data-bind="text:status"></span></td>
+              <td data-bind="text:$index()+1"></td>
+                <td data-bind="text:email"></td>
+                 <td data-bind="text:navn"></td>
+                    <td data-bind="text:antalHylder"></td>
+                    <td data-bind="text:lastActivity"></td>
+                   <td data-bind="text:fornavnOccurs"></td>
+             </tr>
+          </tbody>
+        </table>
+     </div>
+     </div>
+      </div>
+</div>
+  <?!=swcadmin_common.includeBootstrap();?>
+  </body>
+</html>
+
+

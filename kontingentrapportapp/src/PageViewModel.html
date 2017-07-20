@@ -1,0 +1,247 @@
+<script type="text/javascript"> 
+  function PageViewModel(){
+     var self = this;
+     this.toast= ko.observable("");
+     this.isCallingServer= ko.observable(false);
+     this.isDoingAction =ko.observable(false);
+     this.isLoadingLastActivity =ko.observable(false);
+     
+     self.rapportList =ko.observableArray([]);
+     self.sortedRapportList = ko.computed(function(){
+         return _.orderBy(self.rapportList(), ['date'], ['desc'])
+     },this);
+     self.lastRapport = ko.computed(function(){
+          if(self.rapportList().length>0){
+             var result = self.sortedRapportList()[0];
+             console.log(result);
+             return result;
+          }
+          return null;
+     
+     },this);
+     
+     self.shouldShowLastRapport = ko.computed(function(){
+          return self.lastRapport()!=null;
+     
+     },this).subscribe(function(){
+         console.log("retrieving latests stats");
+         self.getLatestStats();
+     });
+     
+     self.stats =ko.observable({medHylder:[]});
+     
+     self.selectedRapport = ko.observable('Med hylder');
+     
+     self.rapportParts= ko.observableArray(['Med hylder','Uden hylder']);
+     
+ 
+     self.currentPart= ko.computed(function(){
+     
+          var selectedRapport=null;
+          if(self.selectedRapport()=="Uden hylder") {
+                selectedRapport= self.stats().udenHylder;
+          }
+          if(self.selectedRapport()=="Med hylder"){          
+              
+              selectedRapport= self.stats().medHylder;              
+          }
+          if(selectedRapport!=null){
+               var chunks =_(_.chunk(selectedRapport,3));
+               function chunkTreatment(){
+                   var next=chunks.next();
+                   if(!next.done){
+                       console.log("treating next chunk");
+                       console.log(next.value);
+                       self.getLatestActivityForRapport(selectedRapport,_.map(next.value,'email'),chunkTreatment);  
+                   }else{
+                      console.log("no more chunk to treat");
+                      self.isLoadingLastActivity(false);
+                   }
+                  
+               }
+               self.isLoadingLastActivity(true);
+               chunkTreatment();
+          }  
+          return selectedRapport;
+     },this);
+     
+     self.sortedCurrentPart = ko.computed(function (){
+         var current =self.currentPart();
+         if(!current)
+            return null;
+          
+         return _( current.sort(function(a,b){
+                 //last activity sort
+                 var d1= a.lastActivity();
+                 var d2= b.lastActivity();
+                 if(!d1 || !d2)
+                 return 0;
+                 if(d1 && d2){
+                 return d1<d2 ? 1: -1;
+                 }else{
+                 return 0;
+                 }
+            })).
+            sortBy('fornavnOccurs')
+            .value();
+     
+     },this);
+     
+     self.canUdmeld = ko.computed(function(){
+          var currentPart= self.currentPart();
+         
+          if(!currentPart || currentPart.length ==0)
+             return false;
+          
+          var result = _.some(currentPart,function(item){return item.doUdmeld();});
+           console.log("Some should udmeld: " + result);
+          return result;
+          
+     
+     },this);
+     
+     self.udmeld = function (){
+          console.log("Udmelder: ");
+          var membersToUdmeld= _(self.sortedCurrentPart())
+             .filter(function (item){return item.doUdmeld();})
+             .map('email')
+             .chunk(3);
+             
+          console.log(membersToUdmeld.value());
+          if(membersToUdmeld.length ==0){
+             console.log("ingen medlemmer valgt");
+             return;
+          }
+          function doUdmeld(){
+              var next =membersToUdmeld.next();
+              if(next.done){
+                  self.isDoingAction(false);
+                  console.log("done udmelding...");
+                  return;
+              } 
+                
+              console.log("calling udmeld on server with data:");
+              console.log(next.value);
+              callGoogleApi(function(result){
+                  console.log("Back from udmeld");
+                  console.log(result);
+                  
+                  _.each(result,function(item){
+                       var member = _.find(self.sortedCurrentPart(),{'email':item.email});
+                       member.status(item.status);                                        
+                       member.doUdmeld(false);
+                  });
+                  
+                  doUdmeld();
+              },function(e){self.isDoingAction(false);self.defaultErrorHandler(e)})
+              .udmeld(next.value);
+          }
+          
+          //initiate call          
+          self.isDoingAction(true);
+          doUdmeld();
+          
+     }
+     
+     self.getLatestActivityForRapport =function(rapport,emails,next){
+         
+         console.log("getLatestActivityForRapport: "+ emails);
+         
+          callGoogleApi(function(result){
+              
+              console.log("getting  last activity:");
+              console.log(result);
+              
+              _.forEach(result,function(r){
+                  rapport[_.findIndex(rapport, { 'email': r.email })].lastActivity(r.lastActivity||"ingen modtaget mails");          
+              });
+              
+              if(next!=null)
+                  next();
+                  
+         },self.defaultErrorHandler).searchForLastMailDate(emails);
+       
+     }
+     
+     self.getLatestStats= function(){
+          if(self.lastRapport()==null){
+              console.log("no latest rapport loaded");
+              return;
+          }
+          self.isCallingServer(true);
+          
+         callGoogleApi(function(result){
+            self.isCallingServer(false);
+            
+            var medHylderData=self.mapResult(result,function(row){
+                return row[4]>0
+                && row[7]=="Nej";
+            });
+            var udenHylderData = self.mapResult(result,function(row){
+                return row[4]==0
+                && row[7]=="Nej";
+            });
+            
+            self.stats({
+               medHylder: medHylderData,
+               udenHylder:udenHylderData    
+            });
+            console.log(self.stats());
+         },self.defaultErrorHandler)
+        .getStats(self.lastRapport().id);
+     
+     }
+     self.mapResult=function(result,filter){
+        return result
+            .filter(filter)
+            .map(function(row){
+                return {
+                   email:row[2],
+                   navn:row[1],
+                   antalHylder: row[4],
+                   lastActivity: ko.observable(""),
+                   doUdmeld: ko.observable(false),
+                   status: ko.observable(""),
+                   fornavnOccurs:row[9]
+                }
+            });
+     }
+     self.getLatestRapports= function(){
+        callGoogleApi(function(result){
+           self.rapportList(result);  
+          
+        },self.defaultErrorHandler)
+        .getLatestRapports();
+     }
+     
+     self.createNewRapport =function(form){
+         console.log(form);
+         if(form.csv ==null){
+             alert("Du skal udpege en csv fil først");
+         }
+         self.isCallingServer(true);
+         callGoogleApi(function(result){
+            self.rapportList.push(result);
+            self.isCallingServer(false);
+            self.getLatestStats();
+         },self.defaultErrorHandler)
+        .createNewRapport(form);
+     
+     }
+     self.defaultErrorHandler=function(message){
+            
+            console.log(message);
+            self.isCallingServer(false);
+            alert(message);
+          }
+     
+   
+     self.getLatestRapports();
+     self.getLatestStats();
+  }
+</script>
+  
+
+
+
+
