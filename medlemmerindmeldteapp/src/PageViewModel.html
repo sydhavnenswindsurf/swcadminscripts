@@ -1,0 +1,92 @@
+<script type="text/javascript"> 
+  function PageViewModel(){
+     var self = this;
+     this.toast= ko.observable("");
+     this.isCallingServer= ko.observable(false);
+     this.medlemmer= ko.observableArray([]);
+     
+     self.edit =function(medlem){
+          console.log('edit: ');
+          console.log(medlem);
+          medlem.isEditing(true);
+          
+     }
+     self.update=function(medlem){
+         
+         var rawMedlem = ko.mapping.toJS(medlem);
+         if(!ko.validatedObservable(medlem).isValid())
+            return;
+         console.log('update:'),
+         console.log(rawMedlem);
+         
+         self.isCallingServer(true);
+         
+         callGoogleApi(function(){
+             console.log('updated member');
+             medlem.isEditing(false);
+             self.isCallingServer(false);
+         },self.defaultErrorHandler).update(rawMedlem);
+         
+     }
+     self.loadMedlemmer= function(){
+          self.isCallingServer(true);
+          google.script.run.withSuccessHandler(function(result){          
+              self.medlemmer(result.map(function(medlem){
+                var obsMedlem = ko.mapping.fromJS(medlem);
+                obsMedlem.isEditing=ko.observable(false);
+                obsMedlem.navn = ko.computed(function(){
+                    return this.fornavn()+' ' +this.efternavn();
+                },obsMedlem);
+                setupValidation(obsMedlem);
+                return obsMedlem;
+              }));
+              self.isCallingServer(false);
+              
+          }).withFailureHandler(self.defaultErrorHandler)
+          .loadMedlemmer();
+     }
+     function setupValidation(obsMedlem){
+           
+                obsMedlem.telefon.extend({ required: true }).extend({ number: true }).extend({minLength:8}).extend({maxLength:8});
+                obsMedlem.email.extend({ required: true }).extend({ email: true });
+                obsMedlem.fornavn.extend({ required: true });
+                obsMedlem.efternavn.extend({ required: true });
+                                
+     }
+     self.udmeld=function(medlem){
+         self.isCallingServer(true);
+         callGoogleApi(function(result){
+             self.isCallingServer(false);
+             $.each(self.medlemmer().filter(function(item){return medlem.medlemsnummer==item.medlemsnummer;}),
+             function(i,medlem){medlem.udmeldt(true);});
+             self.toast("Medlemmet er sat som udmeldt");
+         },self.defaultErrorHandler)
+         .udmeld(ko.mapping.toJS(medlem));
+     }
+     
+     self.displayMode= function(medlem) {
+           console.log("calling displaymode");
+           
+            return medlem.isEditing()?"editTemplate":"readTemplate";
+        }
+        
+        
+     self.defaultErrorHandler=function(message){
+            console.log(message);
+            self.isCallingServer(false);
+            alert(message);
+          }
+     self.loadMedlemmer();
+     
+  }
+  
+  
+  function medlemViewModel(){
+     
+  }
+</script>
+  
+
+
+
+

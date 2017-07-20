@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+   
+       <?!= swcadmin_common.includeSwcAdminExternalJsLibs()?>    
+       <?!= swcadmin_common.includeCommonMethods()?>  
+  </head>
+  <body>
+  <script type="text/html" id="readTemplate">
+   <tr data-bind="css:{erudmeldt:udmeldt()}">          
+           <td data-bind="text:$index() + 1"></td>
+           <td><span data-bind="text:navn"></span></td>
+           <td><span data-bind="text:email"></span></td>
+           <td><span data-bind="text:telefon"></span></td>
+           <td><span data-bind="text:brugerklubudstyr"></span></td>
+           <td><span data-bind="text:medlemsnummer"></span></td>
+           <td><button data-bind="click:function(){$parent.edit($data);};">Rediger</span></button>
+           <td><button data-bind="visible: !udmeldt(), enable: !$parent.isCallingServer(), click:function(){$parent.udmeld($data);}">Udmeld</button></td>
+        </tr>
+ </script>
+  <script type="text/html" id="editTemplate">
+   <tr>       
+           <td data-bind="text:$index() + 1"></td>
+           <td><input class="half" type="text" data-bind="value:fornavn,valueUpdate: 'afterkeydown'">
+           <input class="half" type="text" data-bind="value:efternavn,valueUpdate: 'afterkeydown'">
+           </td>
+           <td><input type="text" data-bind="value:email,valueUpdate: 'afterkeydown'"></td>
+           <td><input type="text" data-bind="value:telefon,valueUpdate: 'afterkeydown'"></td>
+           <td><select data-bind="value:brugerklubudstyr, options:['Ja','Nej']"></td>
+           <td><span data-bind="text:medlemsnummer"></span></td>
+        
+          <td><button data-bind="click:function(){$parent.update($data);};">Opdater</button>
+          </td>
+          <td>
+          <span data-bind="visible:$root.isCallingServer"><?!=swcadmin_common.includeWaiter();?> </span></td>
+        </tr>
+ </script>
+  <section data-bind="text:toast"></section>
+  <table>
+    <thead>   
+      <tr>
+      <td></td>
+        <td>Navn</td>
+         <td>E-email</td>
+          <td>Telefon</td>
+           <td>Brugerklubudstyr</td>
+           <td>Medlemsnummer</td>
+           <td></td>
+      </tr>
+    <thead>
+    <tbody data-bind="template:{foreach: medlemmer, name:displayMode}">
+        
+    </tbody>
+  </table>
+  
+   <?!= include('style'); ?>
+   <?!= swcadmin_common.includeCommonMethods(); ?>
+  <?!= include('PageViewModel'); ?>
+   
+  <script>
+  $(function(){
+       ko.applyBindings(new PageViewModel());
+  });
+  
+
+  </script>
+  </body>
+  
+</html>
+
+
+
+
