@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+       <script src="https://code.jquery.com/jquery-2.2.4.min.js"
+			  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+			  crossorigin="anonymous"></script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"></script>
+ 
+  </head>
+  <body>
+  <h2>Via mail folderen: <?!= data.manuelMailLabel ?></h2>
+  <table>
+     <? for(i in data.paidEmails){?>
+           <tr>
+              <td><?= data.paidEmails[i].name?></td>
+              <td><?= data.paidEmails[i].email?></td>
+           </tr>
+     <?}?>
+  </table>
+
+  </body>
+  
+</html>
+
+
