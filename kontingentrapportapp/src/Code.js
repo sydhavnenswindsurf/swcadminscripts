@@ -1,4 +1,4 @@
-var MANUEL_REGISTRINGER_SPREADSHEET_ID= PropertiesService.getUserProperties().getProperty("ManuelRegistreringerSheetId");
+var MANUEL_REGISTRINGER_SPREADSHEET_ID= UserProperties.getProperty("ManuelRegistreringerSheetId");
 
 var KONTINGENT_RAPPORT_TEMPLATE ="1nUDatf7SxoYOASDrVEeLjwGA2gtsYvS84RcwkaUcxDA";
 

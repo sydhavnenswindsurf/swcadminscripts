@@ -1,5 +1,5 @@
 var udmeldelserLabelKey= "MAIL_FOLDER_UDMELDELSER";
-var medlemmerSheet=PropertiesService.getUserProperties().getProperty("MedlemmerSheetId");
+var medlemmerSheet=UserProperties.getProperty("MedlemmerSheetId");
 var medlemmerSheetName="Medlemsliste";
 var MAIL_COLUMN_ID="4";
 var UDMELDELSESDATE_COLUMN_ID="9";
