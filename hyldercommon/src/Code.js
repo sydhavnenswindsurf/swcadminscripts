@@ -2,7 +2,7 @@ function test2() {
   return "test hello 6";
 }
 
-var HYLDESHEET_ID=PropertiesService.getUserProperties().getProperty("HylderSheetId");
+var HYLDESHEET_ID=UserProperties.getProperty("HylderSheetId");
 var HYLDESHEET_NAME="Hylder";
 var HYLDE_CONTAINER_COLUMN= 1;
 var HYLDE_HYLDENR_COLUMN= 2;
@@ -10,7 +10,7 @@ var HYLDE_MEDLEMSNUMMER_COLUMN= 3;
 var HYLDE_NAVN_COLUMN= 4;
 var HYLDE_EMAIL_COLUMN= 5;
 
-var RESERVERETHYLDER_ID = PropertiesService.getUserProperties().getProperty("ReserveretHylderSheetId");
+var RESERVERETHYLDER_ID = UserProperties.getProperty("ReserveretHylderSheetId");
 var RESERVERETHYLDER_SHEET="reservationer";
 var RESERVERT_EMAIL_COLUMNINDEX = 1;
 var RESERVERT_HYLDENR_COLUMNINDEX = 0;
