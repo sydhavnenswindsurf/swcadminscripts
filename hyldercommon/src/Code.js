@@ -1,7 +1,3 @@
-function test2() {
-  return "test hello 6";
-}
-
 var HYLDESHEET_ID=UserProperties.getProperty("HylderSheetId");
 var HYLDESHEET_NAME="Hylder";
 var HYLDE_CONTAINER_COLUMN= 1;
@@ -84,4 +80,10 @@ function addHylde(hyldenr,email,stamdata){
   //add member
   var hyldeSheet = getHyldeSheet();
   hyldeSheet.getRange(rowId,HYLDE_MEDLEMSNUMMER_COLUMN).setValue(medlemsNummer);
+}
+
+//test
+function test2() { 
+  var s = getHyldeSheet();
+  return 2;
 }

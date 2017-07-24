@@ -1,7 +1,7 @@
 
 
 var MAILFOLDER ="SWC Admin/Ledig hylde";
-var HYLDE_VENTELISTE_SHEET_ID= PropertiesService.getUserProperties().getProperty("HyldeVentelisteSheetId"); 
+var HYLDE_VENTELISTE_SHEET_ID= UserProperties.getProperty("HyldeVentelisteSheetId"); 
 var HYLDE_VENTELISTE_SHEET_NAME="Formularsvar 1";
 var STATUS_COL =1;
 var NAME_COL = 4;
