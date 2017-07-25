@@ -7,8 +7,8 @@ var livereload= require('gulp-livereload');
 //configuration
 
 var currentAppToWorkOn  = {
-	liveReloadUrl: 'https://script.google.com/macros/s/AKfycbydBmK2ZeED19Ad72j3CMBspKWsyWVWYMJ99zjd0eDC/dev',
-	appDirectory: 'indmeldelseapp',
+	liveReloadUrl: 'https://script.google.com/macros/s/AKfycbxItbiJh14lUurQM3anem-_ej8vHD5jUxCM4h7DDW1SaoTIYV3e/dev',
+	appDirectory: 'hyldeventelisteapp',
 };
 var tsProject = p.typescript.createProject('tsconfig.json');
 
