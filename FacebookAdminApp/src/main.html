@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <base target="_top">
+         <?!= swcadmin_common.includeSwcAdminExternalJsLibs()?>    
+         <?!= swcadmin_common.includeCommonMethods();?>
+         <?!= include('PageViewModel.clientjs'); ?>
+        <!-- <script src="https://connect.facebook.net/en_US/sdk.js"></script>-->
+    </head>
+    <body>
+ 
+  <script>
+/*       window.fbAsyncInit = function() {
+      console.log('initializing facebook')
+        FB.init({
+        appId      : '2073869446174108',
+        xfbml      : false,
+        version    : 'v2.10'        
+        });   
+ 
+    FB.AppEvents.logPageView();
+  };   */
+     //FB.init({appId: '2073869446174108', xfbml: false, version: 'v2.10'});  
+ /*   (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = 'https://connect.facebook.net/en_US/sdk.js';
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));  */
+
+</script>
+<script>
+     function testWin(){ 
+        console.log('opening window');
+        //var fbSdk = '<script src="https://connect.facebook.net/en_US/sdk.js"/>';
+        var fbInitAsync = '<script>window.fbAsyncInit= function(){ console.log("inititalizing FB..."); console.log(window.windowTitle);FB.init({appId: "2073869446174108", xfbml: false, version: "v2.10"}); FB.AppEvents.logPageView(); }<\/script>';
+        var fbSdk = '<script>(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = "https://connect.facebook.net/en_US/sdk.js";fjs.parentNode.insertBefore(js, fjs); }(document, "script", "facebook-jssdk"));<\/script>';
+        var popup = window.open(null,'_blank');
+        //$(popup.document.head).append(fbSdk);
+
+        var showWindowTitle = '<script>console.log(window.windowTitle);<\/script>';
+        $(popup.document.body).append(showWindowTitle);
+        setTimeout(function(){
+            //var script = '<script>console.log("hello");alert("df");<\/script>';
+            //var fbInit = '<script>FB.init({appId: "2073869446174108", xfbml: false, version: "v2.10"});<\/script>'
+           
+            $(popup.document.body).append(
+                showWindowTitle + 
+                fbInitAsync + 
+                fbSdk +
+                "<div>hello <\/div>"+
+                //"<script>debugger;console.log('hello from debugger')<\/script>"+
+                //"<script src='https://connect.facebook.net/en_US/sdk.js'/>"+
+               // fbSdk +
+                //fbInit +
+                
+               // script +
+
+                "<div>finished <\/div>"
+                
+            );
+
+        },5000);
+
+
+        //win.document.body.innerHTML ="<script src='https://connect.facebook.net/en_US/sdk.js'/>";
+        //win.document.body.innerHTML =""
+        //win.document.write("<div>df</div><script type='text/javascript'>alert('df')< /script>");
+        //win.document.body.innerHTML ="<div>df</div><script type='text/javascript'> debugger;alert('df')</ script>";
+            // setTimeout(function(){win.close()},2000);
+     }
+</script>
+<!--     <div
+  class="fb-like"
+  data-share="true"
+  data-width="450"
+  data-show-faces="true"> -->
+
+hello  dddddcjd2d
+<button onclick="testWin()">test </button>
+    
+    </body>
+   <!--  <?!= include('fb-sdk.clientjs'); ?> -->
+    <script>
+       
+        $(function(){
+            var viewModel = FacebookAdminApp.PageViewModel();
+
+        });
+       
+    </script>
+</html>
