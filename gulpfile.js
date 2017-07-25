@@ -5,19 +5,22 @@ var vinylpaths = require('vinyl-paths');
 var del = require('del');
 var livereload= require('gulp-livereload');
 //configuration
-var liveReloadUrl = 'https://script.google.com/macros/s/AKfycbwK7SK2V62BdG1yNxzzo444sajqmQ5-uZiV9t00gF0/dev';
 
+var currentAppToWorkOn  = {
+	liveReloadUrl: 'https://script.google.com/macros/s/AKfycbydBmK2ZeED19Ad72j3CMBspKWsyWVWYMJ99zjd0eDC/dev',
+	appDirectory: 'indmeldelseapp',
+};
 var tsProject = p.typescript.createProject('tsconfig.json');
 
 var typeScriptFilesGlob = ['*/src/**/*.ts'];
 
 var filesToWatch = typeScriptFilesGlob
-	.concat(['FacebookAdminApp/**/main.html']);
+	.concat([currentAppToWorkOn.appDirectory + '/**/main.html']);
 
 var defaultTaskSpec = ['tsc','creategsajs'];
 
 var tasksToRunOnWatch = defaultTaskSpec
-	.concat(['sync-facebookadminapp']);
+	.concat(['sync-currentApp']);
 
 
 //Tasks
@@ -47,20 +50,20 @@ gulp.task('creategsajs',['tsc'],function(){
 });
 
 gulp.task('watch', function(){
-	livereload.listen({reloadPage:liveReloadUrl});
+	livereload.listen({ reloadPage: currentAppToWorkOn.liveReloadUrl });
 	gulp.watch(filesToWatch, tasksToRunOnWatch);
 });
 
-gulp.task('sync-facebookadminapp', defaultTaskSpec, function(){
+gulp.task('sync-currentApp', defaultTaskSpec, function(){
 	var reportOptions = {
 		err: true, // default = true, false means don't write err 
 		stderr: true, // default = true, false means don't write stderr 
 		stdout: true // default = true, false means don't write stdout 
 	  }
-//	process.chdir('FacebookAdminApp');
-	return gulp.src('FacebookAdminApp')
-	.pipe(p.exec('cd FacebookAdminApp && gapps push'))
-	.on('end',function(){ p.util.log("Pushed FacebookAdminApp to google drive...")})
+	//process.chdir('FacebookAdminApp');
+	return gulp.src(currentAppToWorkOn.appDirectory)
+	.pipe(p.exec('cd ' + currentAppToWorkOn.appDirectory +' && gapps push'))
+	.on('end',function(){ p.util.log("Pushed "+currentAppToWorkOn.appDirectory+" to google drive...")})
 	.pipe(p.exec.reporter(reportOptions))
 	.pipe(livereload())
 	;
