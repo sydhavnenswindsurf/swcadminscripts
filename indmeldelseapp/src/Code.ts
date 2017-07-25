@@ -1,4 +1,6 @@
-
+import * as lodash from 'lodash';
+declare let LodashGS:any;
+let _:lodash.PH=LodashGS.load();
 var COLUMN_STATUS = "0";
 var COLUMN_FORNAVN = "3";
 var COLUMN_EFTERNAVN = "4";
@@ -13,6 +15,7 @@ var _swcEmail = PropertiesService.getScriptProperties().getProperty("swcemail");
 
 function doGet(): any{
    return buildGui();
+
 }
 function buildGui(): any { 
     var html = HtmlService.createTemplateFromFile('main');
@@ -33,7 +36,9 @@ function getUbehandledeIndmeldelser(): any{
         }
         return row; 
     });
-    var returData = data.map((row)=> {
+
+
+    var returData = data.map((row,index)=> {
         return {
             status: row[COLUMN_STATUS],
             email: row[5],
@@ -42,12 +47,41 @@ function getUbehandledeIndmeldelser(): any{
             telefon: row[6],
             tidsstempel: row[9] instanceof Date ? Utilities.formatDate(row[9], "GMT", "yyyy-MM-dd") : row[9],
             brugerklubudstyr: row[10],
-            bemaerkninger: row[11]
+            bemaerkninger: row[11],
+            sidsteMail: index===0?"Seneste mailsvar":"henter..."
         };
     });
     return returData;
 
 }
+function getLatestMails(emails:string[]):Array<any>{
+
+    return emails.map(getLatestMail);
+
+}
+function getLatestMail(email:string):any{
+    var latestThread = _.chain(GmailApp.search("from:"+email))
+        .orderBy((t:GoogleAppsScript.Gmail.GmailThread)=> t.getLastMessageDate(),"desc")
+        .first()
+        .value();
+        
+    if(latestThread==null)
+        return {email:email};
+    
+    var latestMesssage = _.chain(latestThread.getMessages())
+        .filter((mes)=>mes.getFrom().toLowerCase().indexOf(email.toLowerCase())!==-1)
+        .orderBy((mes)=>mes.getDate(),"desc")        
+        .first()
+        .value();
+
+    return {
+            email:email,
+            lastMailDate:Utilities.formatDate(latestMesssage.getDate(), "GMT", "yyyy-MM-dd"),
+            mailContent: latestMesssage.getPlainBody(),
+            mailUrl: "https://mail.google.com/mail/u/0/#inbox/" + latestMesssage.getId()
+        };
+}
+
 function indmeld(email: any): any{
    
     var stamdata = medlemmer_common.getMedlemmerStamdata();

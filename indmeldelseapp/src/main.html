@@ -77,11 +77,19 @@
                      <tbody data-bind="foreach:indmeldelser">
                       <tr>
                      <td><span data-bind="visible: $index() != 0, text: $index"></span></td>
-                     <td><button data-bind="visible: $index() != 0,enable:!$parent.isCallingServer()&& status()!='Indmeldt', click: function(){$parent.sendVelkomstMail($data.email)}">Send invitationsmail</button></td>
+                     <td><button data-bind="visible: $index() != 0,enable:!$parent.isCallingServer()&& status()!='Indmeldt', click: function(){$parent.sendVelkomstMail($data.email)}">Invitér</button></td>
                      <td><button data-bind="visible: $index() != 0,enable:!$parent.isCallingServer()&&status()!='Indmeldt', click: function(){$parent.indmeld($data.email)}">Godkend</button></td>
                      <td><button data-bind="visible: $index() != 0,enable:!$parent.isCallingServer()&&status()!='Indmeldt', click: function(){$parent.afvis($data.email)}">Afvis</button></td>
-                     
-                     <td id="status" data-bind="text: status"></td>
+                  
+                     <td class="status" id="status" data-bind="text: status"></td>
+                     <td class="status lastmail-status-cell"> 
+                        <a data-bind="attr:{href:sidsteMail().mailUrl},text: $root.getLatestMailDisplay($data.sidsteMail())" target="_blank"></a>
+                        <div class="message-view" style="display:none;" data-bind="css:{ hascontent:sidsteMail().mailContent!=null}">
+                          <span data-bind="text:sidsteMail().mailContent"></span>
+                        </div>
+                        
+                     </td>
+                    
                      <td data-bind="text:fornavn"></td>
                      <td data-bind="text:efternavn"> </td>
                      <td data-bind="text:email"> </td>
@@ -92,9 +100,14 @@
                      </tr>
                      
                      </tbody>
-                    
+                     <script>
+                       $(function(){
+                         
+                       });
+                     </script>
                      </table>
                 </div>
+                
              </div>         
            </div>
         </div>
@@ -103,7 +116,7 @@
     <script>
      $(function(){
         
-         ko.applyBindings(new IndmeldelseApp.PageViewModel());
+         ko.applyBindings(new IndmeldelseApp.PageViewModel("table#indmeldelser"));
      });
     </script>
     

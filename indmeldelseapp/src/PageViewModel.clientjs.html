@@ -1,20 +1,43 @@
 <script type="text/javascript"> 
-/// <reference path="../../index.d.ts" />
 var IndmeldelseApp;
 (function (IndmeldelseApp) {
     var PageViewModel = (function () {
         /**
          *
          */
-        function PageViewModel(isCallingServer, indmeldelser, logMessages) {
+        function PageViewModel(tableSelector, isCallingServer, indmeldelser, logMessages) {
             if (isCallingServer === void 0) { isCallingServer = ko.observable(false); }
             if (indmeldelser === void 0) { indmeldelser = ko.observableArray([]); }
             if (logMessages === void 0) { logMessages = ko.observableArray(["Vælg en handling"]); }
+            this.tableSelector = tableSelector;
             this.isCallingServer = isCallingServer;
             this.indmeldelser = indmeldelser;
             this.logMessages = logMessages;
             this.loadIndmeldelser();
+            this.hookupMessageDisplay(tableSelector);
         }
+        PageViewModel.prototype.hookupMessageDisplay = function (tableSelector) {
+            var lastCellSelector = "td.lastmail-status-cell";
+            var messageWithContentSelector = "div.message-view.hascontent";
+            var displayingClass = "is-displaying-message";
+            $(tableSelector).on('mouseenter', lastCellSelector, function () {
+                var $currentCell = $(this);
+                var message = $currentCell.children(messageWithContentSelector);
+                if (message.length == 0)
+                    return;
+                message.css("top", "-" + (message.height() / 4) + "px");
+                $currentCell.addClass(displayingClass);
+                message.show();
+            });
+            $(tableSelector).on('mouseleave', lastCellSelector, function () {
+                var $currentCell = $(this);
+                var message = $currentCell.children(messageWithContentSelector);
+                if (message.length == 0)
+                    return;
+                $currentCell.removeClass(displayingClass);
+                message.hide();
+            });
+        };
         PageViewModel.prototype.indmeld = function (email) {
             var _this = this;
             this.isCallingServer(true);
@@ -57,13 +80,33 @@ var IndmeldelseApp;
             var _this = this;
             callGoogleApi(function () { _this.logMessages.push("sendt test mail"); }, function (mes) { return _this.defaultErrorHandler(mes); }).sendConfirmationTestMail();
         };
+        PageViewModel.prototype.getLatestMailDisplay = function (sidsteMailObject) {
+            if (sidsteMailObject === "henter..." || sidsteMailObject === "Seneste mailsvar")
+                return sidsteMailObject;
+            return sidsteMailObject.lastMailDate || "ingen mail";
+        };
         PageViewModel.prototype.loadIndmeldelser = function () {
             var _this = this;
             callGoogleApi(function (result) {
                 _this.indmeldelser(result.map(function (item) {
                     item.status = ko.observable(item.status);
+                    item.sidsteMail = ko.observable(item.sidsteMail);
                     return item;
                 }));
+                var chunks = _(_this.indmeldelser().slice(1)).chunk(5);
+                chunks.forEach(function (chunk) {
+                    callGoogleApi(function (results) {
+                        results.forEach(function (result) {
+                            _this.indmeldelser()
+                                .filter(function (i) {
+                                return i.email === result.email;
+                            }).forEach(function (i) {
+                                i.sidsteMail(result);
+                            });
+                        });
+                    }, function (mes) { return _this.defaultErrorHandler(mes); })
+                        .getLatestMails(chunk.map(function (e) { return e.email; }));
+                });
             }, function (mes) { return _this.defaultErrorHandler(mes); }).getUbehandledeIndmeldelser();
         };
         return PageViewModel;

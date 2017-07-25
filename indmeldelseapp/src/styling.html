@@ -17,6 +17,11 @@ table#indmeldelser td#status{
     background-color: whitesmoke;
     color: orange;
 }
+table#indmeldelser td.status{
+    white-space: nowrap!important;
+    padding-left:10px;
+    padding-right: 10px;
+}
        
        .ios-fix{
         width: 1px;
@@ -30,6 +35,33 @@ table#indmeldelser td#status{
         overflow-y: scroll !important;
 
      }
+.message-view{
+    position: absolute;
+    top:0;
+    z-index: 3000;
+    left:90px;
+    white-space: pre;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(wheat), to(white));
+    background-image: -webkit-linear-gradient(top, wheat, white);
+    background-image: -moz-linear-gradient(top, wheat, white);
+    background-image: linear-gradient(to bottom, wheat, white);
+    border-radius: 10px;
+    box-shadow: 5px 5px 6px 6px gray;
+    padding-left:5px;
+    padding-right: 5px;
+    max-height: 300px;
+    overflow: auto;
+    width:550px;
+}
+.lastmail-status-cell{
+    position:relative;
+}
+.lastmail-status-cell.is-displaying-message{
+    background-image: -webkit-gradient(linear, left top, left bottom, from(wheat), to(white));
+    background-image: -webkit-linear-gradient(top, wheat, white);
+    background-image: -moz-linear-gradient(top, wheat, white);
+    background-image: linear-gradient(to bottom, wheat, white);
+}
 </style>
 
 

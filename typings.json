@@ -1,7 +1,8 @@
 {
   "name": "swcapps",
   "devDependencies": {
-    "gulp": "registry:npm/gulp#4.0.0-alpha.2+20160817105618"
+    "gulp": "registry:npm/gulp#4.0.0-alpha.2+20160817105618",
+    "lodash": "registry:npm/lodash#4.0.0+20161015015725"
   },
   "globalDevDependencies": {
     "core-js": "registry:dt/core-js#0.0.0+20160914114559",
@@ -10,6 +11,7 @@
     "google-apps-script/google-apps-script.document": "registry:dt/google-apps-script/google-apps-script.document#0.0.0+20160316171810",
     "google-apps-script/google-apps-script.drive": "registry:dt/google-apps-script/google-apps-script.drive#0.0.0+20160316171810",
     "google-apps-script/google-apps-script.forms": "registry:dt/google-apps-script/google-apps-script.forms#0.0.0+20160316171810",
+    "google-apps-script/google-apps-script.gmail": "registry:dt/google-apps-script/google-apps-script.gmail#0.0.0+20160510192225",
     "google-apps-script/google-apps-script.html": "registry:dt/google-apps-script/google-apps-script.html#0.0.0+20160510192225",
     "google-apps-script/google-apps-script.mail": "registry:dt/google-apps-script/google-apps-script.mail#0.0.0+20160316171810",
     "google-apps-script/google-apps-script.properties": "registry:dt/google-apps-script/google-apps-script.properties#0.0.0+20160316171810",

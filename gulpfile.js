@@ -7,15 +7,14 @@ var livereload= require('gulp-livereload');
 //configuration
 
 var currentAppToWorkOn  = {
-	liveReloadUrl: 'https://script.google.com/macros/s/AKfycbxItbiJh14lUurQM3anem-_ej8vHD5jUxCM4h7DDW1SaoTIYV3e/dev',
-	appDirectory: 'hyldeventelisteapp',
+	appDirectory: 'indmeldelseapp'
 };
 var tsProject = p.typescript.createProject('tsconfig.json');
 
 var typeScriptFilesGlob = ['*/src/**/*.ts'];
 
 var filesToWatch = typeScriptFilesGlob
-	.concat([currentAppToWorkOn.appDirectory + '/**/main.html']);
+	.concat([currentAppToWorkOn.appDirectory + '/**/*.html',"!" + currentAppToWorkOn.appDirectory + "/**/*.clientjs.html"]);
 
 var defaultTaskSpec = ['tsc','creategsajs'];
 
@@ -50,7 +49,8 @@ gulp.task('creategsajs',['tsc'],function(){
 });
 
 gulp.task('watch', function(){
-	livereload.listen({ reloadPage: currentAppToWorkOn.liveReloadUrl });
+	//livereload.listen({ reloadPage: currentAppToWorkOn.liveReloadUrl });
+	livereload.listen();
 	gulp.watch(filesToWatch, tasksToRunOnWatch);
 });
 

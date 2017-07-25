@@ -1,3 +1,4 @@
+var _ = LodashGS.load();
 var COLUMN_STATUS = "0";
 var COLUMN_FORNAVN = "3";
 var COLUMN_EFTERNAVN = "4";
@@ -30,7 +31,7 @@ function getUbehandledeIndmeldelser() {
         }
         return row;
     });
-    var returData = data.map(function (row) {
+    var returData = data.map(function (row, index) {
         return {
             status: row[COLUMN_STATUS],
             email: row[5],
@@ -39,10 +40,33 @@ function getUbehandledeIndmeldelser() {
             telefon: row[6],
             tidsstempel: row[9] instanceof Date ? Utilities.formatDate(row[9], "GMT", "yyyy-MM-dd") : row[9],
             brugerklubudstyr: row[10],
-            bemaerkninger: row[11]
+            bemaerkninger: row[11],
+            sidsteMail: index === 0 ? "Seneste mailsvar" : "henter..."
         };
     });
     return returData;
+}
+function getLatestMails(emails) {
+    return emails.map(getLatestMail);
+}
+function getLatestMail(email) {
+    var latestThread = _.chain(GmailApp.search("from:" + email))
+        .orderBy(function (t) { return t.getLastMessageDate(); }, "desc")
+        .first()
+        .value();
+    if (latestThread == null)
+        return { email: email };
+    var latestMesssage = _.chain(latestThread.getMessages())
+        .filter(function (mes) { return mes.getFrom().toLowerCase().indexOf(email.toLowerCase()) !== -1; })
+        .orderBy(function (mes) { return mes.getDate(); }, "desc")
+        .first()
+        .value();
+    return {
+        email: email,
+        lastMailDate: Utilities.formatDate(latestMesssage.getDate(), "GMT", "yyyy-MM-dd"),
+        mailContent: latestMesssage.getPlainBody(),
+        mailUrl: "https://mail.google.com/mail/u/0/#inbox/" + latestMesssage.getId()
+    };
 }
 function indmeld(email) {
     var stamdata = medlemmer_common.getMedlemmerStamdata();
