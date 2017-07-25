@@ -16,8 +16,7 @@ function doGet(): any{
 }
 function buildGui(): any { 
     var html = HtmlService.createTemplateFromFile('main');
-    var result = html.evaluate()
-        .setSandboxMode(HtmlService.SandboxMode.IFrame); 
+    var result = html.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME); 
     return result;
  
 }

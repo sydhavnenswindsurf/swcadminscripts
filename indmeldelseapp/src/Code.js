@@ -14,8 +14,7 @@ function doGet() {
 }
 function buildGui() {
     var html = HtmlService.createTemplateFromFile('main');
-    var result = html.evaluate()
-        .setSandboxMode(HtmlService.SandboxMode.IFrame);
+    var result = html.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME);
     return result;
 }
 function getUbehandledeIndmeldelser() {
@@ -173,5 +172,3 @@ function include(filename) {
 function testIndmeld() {
     indmeld("rlhtest@test.dk");
 }
-
-//# sourceMappingURL=Code.js.map
