@@ -96,14 +96,21 @@ function sendVelkomstMail(email) {
     }
 }
 function _setNewStatus(email, status) {
-    var rowId = _getSheetData()
+    var rowIds = _getSheetData()
         .getValues()
         .map(function (row) { return row[COLUMN_EMAIL]; })
-        .indexOf(email) + 1;
+        .reduce(function (a, e, i) {
+        if (e === email) {
+            a.push(i + 1);
+        }
+        return a;
+    }, []);
     var sheet = SpreadsheetApp
         .openById(NEWMEMBERS_SHEETID)
         .getSheetByName("Formularsvar 1");
-    sheet.getRange(rowId, 1).setValue(status);
+    rowIds.forEach(function (rowId) {
+        sheet.getRange(rowId, 1).setValue(status);
+    });
 }
 function _overfoerIndmeldelsesData(email) {
     var values = _getSheetData().getValues();

@@ -17,7 +17,7 @@ namespace IndmeldelseApp{
         public  indmeld (email:string){
             this.isCallingServer(true);
             callGoogleApi((result)=> 
-            this.feedBack(email,result), this.defaultErrorHandler)
+            this.feedBack(email,result), (mes)=>this.defaultErrorHandler(mes))
             .indmeld(email);
         }
         private feedBack(email:string,result:any){
@@ -33,13 +33,13 @@ namespace IndmeldelseApp{
         
         public sendVelkomstMail (email){
                 this.isCallingServer(true);
-                callGoogleApi((result)=> { this.feedBack(email,result); },this.defaultErrorHandler)
+                callGoogleApi((result)=> { this.feedBack(email,result); },(mes)=>this.defaultErrorHandler(mes))
                 .sendVelkomstMail(email);
 
         }
         public afvis (email){
                 this.isCallingServer(true);
-                callGoogleApi((result)=>{ this.feedBack(email,result);},this.defaultErrorHandler)
+                callGoogleApi((result)=>{ this.feedBack(email,result);},(mes)=>this.defaultErrorHandler(mes))
                 .afvis(email);
 
         }
@@ -50,10 +50,10 @@ namespace IndmeldelseApp{
             alert(message);
         }
         public sendInviteTestMail(){
-            callGoogleApi(()=>{this.logMessages.push("sendt test mail");},this.defaultErrorHandler).sendInviteTestMail();
+            callGoogleApi(()=>{this.logMessages.push("sendt test mail");},(mes)=>this.defaultErrorHandler(mes)).sendInviteTestMail();
         }
         public sendConfirmationTestMail (){
-            callGoogleApi(()=>{this.logMessages.push("sendt test mail");},this.defaultErrorHandler).sendConfirmationTestMail();
+            callGoogleApi(()=>{this.logMessages.push("sendt test mail");},(mes)=>this.defaultErrorHandler(mes)).sendConfirmationTestMail();
         }
         
         private loadIndmeldelser (){
@@ -62,7 +62,7 @@ namespace IndmeldelseApp{
                     item.status =ko.observable(item.status);
                     return item;
                 })); 
-            },(e)=>this.defaultErrorHandler(e)).getUbehandledeIndmeldelser();
+            },(mes)=>this.defaultErrorHandler(mes)).getUbehandledeIndmeldelser();
         
         }
         

@@ -106,14 +106,24 @@ function sendVelkomstMail(email: any): any {
 
 function _setNewStatus(email: any, status: string): any{
 
-   var rowId = _getSheetData()
+   var rowIds = _getSheetData()
         .getValues()
         .map((row)=> { return row[COLUMN_EMAIL]; })
-        .indexOf(email) + 1;
+        .reduce(function (a,e,i){
+            if(e===email){
+                a.push(i+1);
+            }
+            return a;                
+        },[]);
+        
     var sheet = SpreadsheetApp
         .openById(NEWMEMBERS_SHEETID)
         .getSheetByName("Formularsvar 1");
-    sheet.getRange(rowId, 1).setValue(status); 
+
+    rowIds.forEach(function(rowId){
+        sheet.getRange(rowId, 1).setValue(status); 
+    });
+    
 }
  function _overfoerIndmeldelsesData(email: any): any{
  var values = _getSheetData().getValues();

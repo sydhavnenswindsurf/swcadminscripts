@@ -20,7 +20,7 @@ var IndmeldelseApp;
             this.isCallingServer(true);
             callGoogleApi(function (result) {
                 return _this.feedBack(email, result);
-            }, this.defaultErrorHandler)
+            }, function (mes) { return _this.defaultErrorHandler(mes); })
                 .indmeld(email);
         };
         PageViewModel.prototype.feedBack = function (email, result) {
@@ -35,13 +35,13 @@ var IndmeldelseApp;
         PageViewModel.prototype.sendVelkomstMail = function (email) {
             var _this = this;
             this.isCallingServer(true);
-            callGoogleApi(function (result) { _this.feedBack(email, result); }, this.defaultErrorHandler)
+            callGoogleApi(function (result) { _this.feedBack(email, result); }, function (mes) { return _this.defaultErrorHandler(mes); })
                 .sendVelkomstMail(email);
         };
         PageViewModel.prototype.afvis = function (email) {
             var _this = this;
             this.isCallingServer(true);
-            callGoogleApi(function (result) { _this.feedBack(email, result); }, this.defaultErrorHandler)
+            callGoogleApi(function (result) { _this.feedBack(email, result); }, function (mes) { return _this.defaultErrorHandler(mes); })
                 .afvis(email);
         };
         PageViewModel.prototype.defaultErrorHandler = function (message) {
@@ -51,11 +51,11 @@ var IndmeldelseApp;
         };
         PageViewModel.prototype.sendInviteTestMail = function () {
             var _this = this;
-            callGoogleApi(function () { _this.logMessages.push("sendt test mail"); }, this.defaultErrorHandler).sendInviteTestMail();
+            callGoogleApi(function () { _this.logMessages.push("sendt test mail"); }, function (mes) { return _this.defaultErrorHandler(mes); }).sendInviteTestMail();
         };
         PageViewModel.prototype.sendConfirmationTestMail = function () {
             var _this = this;
-            callGoogleApi(function () { _this.logMessages.push("sendt test mail"); }, this.defaultErrorHandler).sendConfirmationTestMail();
+            callGoogleApi(function () { _this.logMessages.push("sendt test mail"); }, function (mes) { return _this.defaultErrorHandler(mes); }).sendConfirmationTestMail();
         };
         PageViewModel.prototype.loadIndmeldelser = function () {
             var _this = this;
@@ -64,7 +64,7 @@ var IndmeldelseApp;
                     item.status = ko.observable(item.status);
                     return item;
                 }));
-            }, function (e) { return _this.defaultErrorHandler(e); }).getUbehandledeIndmeldelser();
+            }, function (mes) { return _this.defaultErrorHandler(mes); }).getUbehandledeIndmeldelser();
         };
         return PageViewModel;
     }());
