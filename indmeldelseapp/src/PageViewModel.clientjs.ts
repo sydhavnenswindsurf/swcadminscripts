@@ -99,7 +99,6 @@ namespace IndmeldelseApp {
             }, (mes) => this.defaultErrorHandler(mes)).getUbehandledeIndmeldelser();
         }
         private setMailUrl(latestMailResult:any){
-            console.log(latestMailResult.email +": " +latestMailResult.labels);
 
             if(this.isMobile()){
                 //if no labels

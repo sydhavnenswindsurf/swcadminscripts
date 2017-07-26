@@ -97,7 +97,6 @@ var IndmeldelseApp;
             }, function (mes) { return _this.defaultErrorHandler(mes); }).getUbehandledeIndmeldelser();
         };
         PageViewModel.prototype.setMailUrl = function (latestMailResult) {
-            console.log(latestMailResult.email + ": " + latestMailResult.labels);
             if (this.isMobile()) {
                 //if no labels
                 var threadPrefix = "priority/%5Esmartlabel_personal";
