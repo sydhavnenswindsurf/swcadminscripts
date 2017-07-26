@@ -13,32 +13,9 @@ namespace IndmeldelseApp {
             public logMessages = ko.observableArray(["Vælg en handling"])
         ) {
             this.loadIndmeldelser();
-            this.hookupMessageDisplay(tableSelector);
 
         }
-        private hookupMessageDisplay(tableSelector: string): any {
-            const lastCellSelector =  "td.lastmail-status-cell";
-            const messageWithContentSelector = "div.message-view.hascontent";
-            const displayingClass = "is-displaying-message";
-
-            $(tableSelector).on('mouseenter',lastCellSelector, function () {
-                var $currentCell = $(this);
-                var message = $currentCell.children(messageWithContentSelector);
-                if (message.length == 0)
-                    return;
-                message.css("top","-" + (message.height()/4)+"px")
-                $currentCell.addClass(displayingClass);
-                message.show();
-            });
-            $(tableSelector).on('mouseleave', lastCellSelector, function () {
-                var $currentCell = $(this);
-                var message = $currentCell.children(messageWithContentSelector);
-                if (message.length == 0)
-                    return;                
-                $currentCell.removeClass(displayingClass);
-                message.hide();
-            });
-        }
+       
         public indmeld(email: string) {
             this.isCallingServer(true);
             callGoogleApi((result) =>
@@ -113,5 +90,28 @@ namespace IndmeldelseApp {
             }, (mes) => this.defaultErrorHandler(mes)).getUbehandledeIndmeldelser();
         }
 
+    }
+
+    export class GuiEnhancements{
+        constructor(private tableSelector: string){
+            this.hookupMessageDisplay(tableSelector);
+        }
+         private hookupMessageDisplay(tableSelector: string): any {
+            const lastCellSelector =  "td.lastmail-status-cell";
+            const messageWithContentSelector = "div.message-view.hascontent";
+
+            $(tableSelector).on('mouseenter',lastCellSelector, function () {
+                var $currentCell = $(this);
+                var message = $currentCell.children(messageWithContentSelector);
+                if (message.length == 0)
+                    return;
+                //Calculate placement
+                message.css("top","-" + (message.height()/4)+"px")
+                message.show();
+            });
+            $(tableSelector).on('mouseleave', lastCellSelector, function () {
+                $(this).children(messageWithContentSelector).hide();
+            });
+        }
     }
 }

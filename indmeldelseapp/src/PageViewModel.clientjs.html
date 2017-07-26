@@ -14,30 +14,7 @@ var IndmeldelseApp;
             this.indmeldelser = indmeldelser;
             this.logMessages = logMessages;
             this.loadIndmeldelser();
-            this.hookupMessageDisplay(tableSelector);
         }
-        PageViewModel.prototype.hookupMessageDisplay = function (tableSelector) {
-            var lastCellSelector = "td.lastmail-status-cell";
-            var messageWithContentSelector = "div.message-view.hascontent";
-            var displayingClass = "is-displaying-message";
-            $(tableSelector).on('mouseenter', lastCellSelector, function () {
-                var $currentCell = $(this);
-                var message = $currentCell.children(messageWithContentSelector);
-                if (message.length == 0)
-                    return;
-                message.css("top", "-" + (message.height() / 4) + "px");
-                $currentCell.addClass(displayingClass);
-                message.show();
-            });
-            $(tableSelector).on('mouseleave', lastCellSelector, function () {
-                var $currentCell = $(this);
-                var message = $currentCell.children(messageWithContentSelector);
-                if (message.length == 0)
-                    return;
-                $currentCell.removeClass(displayingClass);
-                message.hide();
-            });
-        };
         PageViewModel.prototype.indmeld = function (email) {
             var _this = this;
             this.isCallingServer(true);
@@ -112,6 +89,30 @@ var IndmeldelseApp;
         return PageViewModel;
     }());
     IndmeldelseApp.PageViewModel = PageViewModel;
+    var GuiEnhancements = (function () {
+        function GuiEnhancements(tableSelector) {
+            this.tableSelector = tableSelector;
+            this.hookupMessageDisplay(tableSelector);
+        }
+        GuiEnhancements.prototype.hookupMessageDisplay = function (tableSelector) {
+            var lastCellSelector = "td.lastmail-status-cell";
+            var messageWithContentSelector = "div.message-view.hascontent";
+            $(tableSelector).on('mouseenter', lastCellSelector, function () {
+                var $currentCell = $(this);
+                var message = $currentCell.children(messageWithContentSelector);
+                if (message.length == 0)
+                    return;
+                //Calculate placement
+                message.css("top", "-" + (message.height() / 4) + "px");
+                message.show();
+            });
+            $(tableSelector).on('mouseleave', lastCellSelector, function () {
+                $(this).children(messageWithContentSelector).hide();
+            });
+        };
+        return GuiEnhancements;
+    }());
+    IndmeldelseApp.GuiEnhancements = GuiEnhancements;
 })(IndmeldelseApp || (IndmeldelseApp = {}));
 
 </script>
