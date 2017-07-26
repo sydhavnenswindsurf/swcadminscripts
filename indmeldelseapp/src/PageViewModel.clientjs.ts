@@ -120,10 +120,10 @@ namespace IndmeldelseApp {
                     return;
                 //Calculate placement
                 message.css("top","-" + (message.height()/4)+"px")
-                message.show();
+                message.fadeIn();
             });
             $(tableSelector).on('mouseleave', lastCellSelector, function () {
-                $(this).children(messageWithContentSelector).hide();
+                $(this).children(messageWithContentSelector).fadeOut();
             });
         }
     }
