@@ -74,7 +74,29 @@ table#indmeldelser tr:first-child td {
 table#indmeldelser tr:first-child td.lastmail-status-cell{
    background: transparent;
 }
+.logmessage-toast{
+    position:fixed;    
+    top:5px;
+    left:5px;
+    z-index: 4000;
 
+    margin: 0;
+    padding: 0;
+}
+.logmessage-toast li{
+
+    list-style: none;
+    padding: 5px;
+    border: 1px solid green;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    box-shadow: 1px 1px 1px 1px darkgreen;
+
+    background-image: -webkit-gradient(linear, left top, left bottom, from(greenyellow), to(yellow));
+    background-image: -webkit-linear-gradient(top, greenyellow, yellow);
+    background-image: -moz-linear-gradient(top, greenyellow, yellow);
+    background-image: linear-gradient(to bottom, greenyellow, yellow);
+}
 </style>
 
 

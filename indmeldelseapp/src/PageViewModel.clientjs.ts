@@ -1,4 +1,5 @@
-declare let _: any;
+import * as lodash from 'lodash';
+declare let _:lodash.PH;
 namespace IndmeldelseApp {
     export class PageViewModel {
 
@@ -6,10 +7,10 @@ namespace IndmeldelseApp {
          *
          */
         constructor(
-            private tableSelector: string,
             private isCallingServer = ko.observable<Boolean>(false),
             public indmeldelser = ko.observableArray([]),
-            public logMessages = ko.observableArray(["Vælg en handling"])
+            public logMessageHandler:LogMessageHandler =new LogMessageHandler(),
+            public logMessages=logMessageHandler.logMessages        
         ) {
             this.loadIndmeldelser();
 
@@ -35,7 +36,7 @@ namespace IndmeldelseApp {
 
                 });
             }
-            this.logMessages.push(result.message);
+            this.logMessageHandler.addMessage(result.message);
         }
 
         public sendVelkomstMail(email) {
@@ -55,13 +56,13 @@ namespace IndmeldelseApp {
             this.isCallingServer(false);
             console.log(message);
             //alert(message);
-            this.logMessages.push(message);
+            this.logMessageHandler.addMessage(message);
         }
         public sendInviteTestMail() {
-            callGoogleApi(() => { this.logMessages.push("sendt test mail"); }, (mes) => this.defaultErrorHandler(mes)).sendInviteTestMail();
+            callGoogleApi(() => { this.logMessageHandler.addMessage("sendt test mail"); }, (mes) => this.defaultErrorHandler(mes)).sendInviteTestMail();
         }
         public sendConfirmationTestMail() {
-            callGoogleApi(() => { this.logMessages.push("sendt test mail"); }, (mes) => this.defaultErrorHandler(mes)).sendConfirmationTestMail();
+            callGoogleApi(() => { this.logMessageHandler.addMessage("sendt test mail"); }, (mes) => this.defaultErrorHandler(mes)).sendConfirmationTestMail();
         }
         public getLatestMailDisplay(sidsteMailObject) {
             if (sidsteMailObject === "henter..." || sidsteMailObject === "Seneste mailsvar")
@@ -80,7 +81,7 @@ namespace IndmeldelseApp {
                 chunks.forEach((chunk) => {
                     callGoogleApi((results) => {                        
                         results.forEach(result => {
-                            if(result.mailId !==null)
+                            if(result.mailId !== undefined)
                                 this.setMailUrl(result);                            
                             this.indmeldelser()
                                 .filter((i) => {
@@ -98,11 +99,20 @@ namespace IndmeldelseApp {
             }, (mes) => this.defaultErrorHandler(mes)).getUbehandledeIndmeldelser();
         }
         private setMailUrl(latestMailResult:any){
-            latestMailResult.mailUrl = this.isMobile()
-                ? "https://mail.google.com/mail/mu/mp/831/#cv/priority/%5Esmartlabel_personal/" + latestMailResult.mailId 
-                : "https://mail.google.com/mail/u/0/#inbox/" + latestMailResult.mailId;
-        }
+            console.log(latestMailResult.email +": " +latestMailResult.labels);
 
+            if(this.isMobile()){
+                //if no labels
+                var threadPrefix = "priority/%5Esmartlabel_personal"
+                //if label we need to show with some label in url
+                if(latestMailResult.labels.length>0)
+                    threadPrefix =latestMailResult.labels[0].replace(/\/| /g, '-');
+                    
+                latestMailResult.mailUrl = "https://mail.google.com/mail/mu/mp/831/#cv/"+ threadPrefix +"/" + latestMailResult.mailId 
+            }else{
+                     latestMailResult.mailUrl = "https://mail.google.com/mail/u/0/#inbox/" + latestMailResult.mailId;
+            }
+        }
     }
 
     export class GuiEnhancements{
@@ -126,5 +136,33 @@ namespace IndmeldelseApp {
                 $(this).children(messageWithContentSelector).fadeOut();
             });
         }
+    }
+
+    export class LogMessageHandler{
+        constructor(
+            public logMessages = ko.observableArray([])
+            
+        ){
+
+        } 
+         public showMessage (elem) {              
+             if (elem.nodeType === 1) $(elem).fadeIn(1000);
+         }
+         public hideMessage (elem) { 
+             if (elem.nodeType === 1) $(elem).fadeOut(1000);         
+         }
+
+         public addMessage(message:string){
+            const logMessage = {
+                id:Math.random(),
+                message:message
+            };
+            this.logMessages.push(logMessage);
+            console.log("added logmessage: " + logMessage.id+", " +logMessage.message);
+            setTimeout(()=>{               
+                let logMessage= this.logMessages.shift();
+                 console.log("removed logmessage: " + logMessage.id+", " +logMessage.message);
+            },10000);
+         }
     }
 }

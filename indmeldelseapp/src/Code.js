@@ -54,7 +54,6 @@ function getLatestMails(emails) {
     });
 }
 function getLatestMail(email) {
-    Logger.log(HtmlService.getUserAgent());
     var latestThread = _.chain(GmailApp.search("from:" + email))
         .orderBy(function (t) { return t.getLastMessageDate(); }, "desc")
         .first()
@@ -70,7 +69,8 @@ function getLatestMail(email) {
         email: email,
         lastMailDate: Utilities.formatDate(latestMesssage.getDate(), "GMT", "yyyy-MM-dd"),
         mailContent: latestMesssage.getPlainBody(),
-        mailId: latestMesssage.getId()
+        mailId: latestMesssage.getThread().getId(),
+        labels: latestThread.getLabels().map(function (t) { return t.getName(); })
     };
 }
 function indmeld(email) {

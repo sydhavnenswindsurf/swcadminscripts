@@ -64,10 +64,6 @@ function getLatestMails(emails:string[]):Array<any>{
 
 }
 function getLatestMail(email:string):any{
-
-    Logger.log(HtmlService.getUserAgent()); 
-
-
     var latestThread = _.chain(GmailApp.search("from:"+email))
         .orderBy((t:GoogleAppsScript.Gmail.GmailThread)=> t.getLastMessageDate(),"desc")
         .first()
@@ -86,7 +82,8 @@ function getLatestMail(email:string):any{
             email:email,
             lastMailDate:Utilities.formatDate(latestMesssage.getDate(), "GMT", "yyyy-MM-dd"),
             mailContent: latestMesssage.getPlainBody(),
-            mailId:latestMesssage.getId()
+            mailId:latestMesssage.getThread().getId(),
+            labels:latestThread.getLabels().map(t=>t.getName())
         };
 }
 
