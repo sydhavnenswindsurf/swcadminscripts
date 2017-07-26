@@ -22,12 +22,14 @@
                        
                        Indmeldelse foregår så på følgende måde:
                        <ol>
-                         <li>Klik på 'Send invitationsmail'.<br>
+                         <li>Klik på 'Invitér'.<br>
                          <small>Der sendes en mail med velkomst- og indbetalingsinformation ud fra invitationsmail skabelonen. Status kolonnen ændres nu til 'Sendt mail'</small>
                          </li>
-                         <li>Tjek for svar her: <a href="https://mail.google.com/mail/u/0/#label/SWC+Admin%2FIndmeldelser" target="_blank">SWC Admin/Indmeldelser</a>. <br/>
-                         <small>I mailen bliver folk bedt om at svare på mailen med kvittering. Hvis de gør det korrekt (eg. de ikke ændre i subjektlinjen i mailen) vil deres svar ryge ind i mail folderen i linket ovenfor. 
-                         Man kan således nemt holde øje med svar i den folder for svar med kvittering. </small>
+                         <li>Check for svar<br/>
+                         <small>I mailen bliver folk bedt om at svare på mailen med kvittering. Hvis de gør det korrekt (eg. de ikke ændre i subjektlinjen i mailen) vil deres svar ryge ind i mail folderen her:
+                          <a href="https://mail.google.com/mail/u/0/#label/SWC+Admin%2FIndmeldelser" target="_blank">SWC Admin/Indmeldelser</a>.  <br>
+                          Dato for seneste svar kan ses i listen under "seneste mailsvar", og der er også link til mailen. Desuden vises mailen hvis man hover på datoen.<br>
+                         Man kan således nemt holde øje med svar i den folder for svar med kvittering. </small> 
                          </li>
                          <li>Klik 'Godkend' eller 'Afvis'.<br>
                          <small>Når de har svaret på mail med kvittering klikkes på 'Godkend' knappen ud for personen i listen. Herved overføres de til medlemslisten, og de modtager en bekræftelsesmail skabt ud fra nedenstående skabelon, med information om nøgleudlevring etc. Deres kvitteringsmail flyttes også til en processeret subfolder. Hvis folk ikke betaler eller direkte ikke ønsker at være medlem, kan man trykke 'afvis' og de fjernes fra listen.
@@ -58,10 +60,9 @@
              <div class="col-md-4">
                   <section id="logmessage" >
                      <div data-bind="foreach:logMessages">
-                     <div>
-                     <span> - </span>
-                     <span data-bind="text:$data"></span>
-                     </div>
+                        <div>
+                        <span> - </span><span data-bind="text:$data"></span>
+                        </div>
                      </div>
                      <div data-bind="visible:isCallingServer">
                      <?!= swcadmin_common.includeWaiter();?>

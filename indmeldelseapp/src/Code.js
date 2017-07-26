@@ -47,9 +47,14 @@ function getUbehandledeIndmeldelser() {
     return returData;
 }
 function getLatestMails(emails) {
-    return emails.map(getLatestMail);
+    return emails.map(function (email) {
+        var latestMail = getLatestMail(email);
+        Utilities.sleep(200);
+        return latestMail;
+    });
 }
 function getLatestMail(email) {
+    Logger.log(HtmlService.getUserAgent());
     var latestThread = _.chain(GmailApp.search("from:" + email))
         .orderBy(function (t) { return t.getLastMessageDate(); }, "desc")
         .first()
@@ -65,7 +70,7 @@ function getLatestMail(email) {
         email: email,
         lastMailDate: Utilities.formatDate(latestMesssage.getDate(), "GMT", "yyyy-MM-dd"),
         mailContent: latestMesssage.getPlainBody(),
-        mailUrl: "https://mail.google.com/mail/u/0/#inbox/" + latestMesssage.getId()
+        mailId: latestMesssage.getId()
     };
 }
 function indmeld(email) {

@@ -56,10 +56,18 @@ function getUbehandledeIndmeldelser(): any{
 }
 function getLatestMails(emails:string[]):Array<any>{
 
-    return emails.map(getLatestMail);
+    return emails.map((email)=>{
+        var latestMail = getLatestMail(email);
+        Utilities.sleep(200);
+        return latestMail;
+    });
 
 }
 function getLatestMail(email:string):any{
+
+    Logger.log(HtmlService.getUserAgent()); 
+
+
     var latestThread = _.chain(GmailApp.search("from:"+email))
         .orderBy((t:GoogleAppsScript.Gmail.GmailThread)=> t.getLastMessageDate(),"desc")
         .first()
@@ -78,7 +86,7 @@ function getLatestMail(email:string):any{
             email:email,
             lastMailDate:Utilities.formatDate(latestMesssage.getDate(), "GMT", "yyyy-MM-dd"),
             mailContent: latestMesssage.getPlainBody(),
-            mailUrl: "https://mail.google.com/mail/u/0/#inbox/" + latestMesssage.getId()
+            mailId:latestMesssage.getId()
         };
 }
 

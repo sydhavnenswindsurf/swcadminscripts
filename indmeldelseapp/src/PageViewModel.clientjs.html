@@ -14,7 +14,13 @@ var IndmeldelseApp;
             this.indmeldelser = indmeldelser;
             this.logMessages = logMessages;
             this.loadIndmeldelser();
+            console.log("is mobile: " + this.isMobile());
         }
+        PageViewModel.prototype.isMobile = function () {
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+                return true;
+            return false;
+        };
         PageViewModel.prototype.indmeld = function (email) {
             var _this = this;
             this.isCallingServer(true);
@@ -47,7 +53,8 @@ var IndmeldelseApp;
         PageViewModel.prototype.defaultErrorHandler = function (message) {
             this.isCallingServer(false);
             console.log(message);
-            alert(message);
+            //alert(message);
+            this.logMessages.push(message);
         };
         PageViewModel.prototype.sendInviteTestMail = function () {
             var _this = this;
@@ -70,10 +77,12 @@ var IndmeldelseApp;
                     item.sidsteMail = ko.observable(item.sidsteMail);
                     return item;
                 }));
-                var chunks = _(_this.indmeldelser().slice(1)).chunk(5);
+                var chunks = _(_this.indmeldelser().slice(1)).chunk(10); //der er kvote på hvor man gange man må kalde gmail api (for mail svar).
                 chunks.forEach(function (chunk) {
                     callGoogleApi(function (results) {
                         results.forEach(function (result) {
+                            if (result.mailId !== null)
+                                _this.setMailUrl(result);
                             _this.indmeldelser()
                                 .filter(function (i) {
                                 return i.email === result.email;
@@ -85,6 +94,11 @@ var IndmeldelseApp;
                         .getLatestMails(chunk.map(function (e) { return e.email; }));
                 });
             }, function (mes) { return _this.defaultErrorHandler(mes); }).getUbehandledeIndmeldelser();
+        };
+        PageViewModel.prototype.setMailUrl = function (latestMailResult) {
+            latestMailResult.mailUrl = this.isMobile()
+                ? "https://mail.google.com/mail/mu/mp/831/#cv/priority/%5Esmartlabel_personal/" + latestMailResult.mailId
+                : "https://mail.google.com/mail/u/0/#inbox/" + latestMailResult.mailId;
         };
         return PageViewModel;
     }());

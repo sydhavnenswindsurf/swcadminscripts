@@ -5,7 +5,6 @@ namespace IndmeldelseApp {
         /**
          *
          */
-
         constructor(
             private tableSelector: string,
             private isCallingServer = ko.observable<Boolean>(false),
@@ -14,8 +13,14 @@ namespace IndmeldelseApp {
         ) {
             this.loadIndmeldelser();
 
+            console.log("is mobile: " +this.isMobile());
+           
         }
-       
+        private isMobile():boolean{
+            if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) 
+                return true;
+            return false;
+        }
         public indmeld(email: string) {
             this.isCallingServer(true);
             callGoogleApi((result) =>
@@ -49,7 +54,8 @@ namespace IndmeldelseApp {
         private defaultErrorHandler(message: string) {
             this.isCallingServer(false);
             console.log(message);
-            alert(message);
+            //alert(message);
+            this.logMessages.push(message);
         }
         public sendInviteTestMail() {
             callGoogleApi(() => { this.logMessages.push("sendt test mail"); }, (mes) => this.defaultErrorHandler(mes)).sendInviteTestMail();
@@ -70,10 +76,12 @@ namespace IndmeldelseApp {
                     return item;
                 }));
 
-                let chunks = _(this.indmeldelser().slice(1)).chunk(5);
+                let chunks = _(this.indmeldelser().slice(1)).chunk(10);//der er kvote på hvor man gange man må kalde gmail api (for mail svar).
                 chunks.forEach((chunk) => {
-                    callGoogleApi((results) => {
+                    callGoogleApi((results) => {                        
                         results.forEach(result => {
+                            if(result.mailId !==null)
+                                this.setMailUrl(result);                            
                             this.indmeldelser()
                                 .filter((i) => {
                                     return i.email === result.email;
@@ -88,6 +96,11 @@ namespace IndmeldelseApp {
 
 
             }, (mes) => this.defaultErrorHandler(mes)).getUbehandledeIndmeldelser();
+        }
+        private setMailUrl(latestMailResult:any){
+            latestMailResult.mailUrl = this.isMobile()
+                ? "https://mail.google.com/mail/mu/mp/831/#cv/priority/%5Esmartlabel_personal/" + latestMailResult.mailId 
+                : "https://mail.google.com/mail/u/0/#inbox/" + latestMailResult.mailId;
         }
 
     }
