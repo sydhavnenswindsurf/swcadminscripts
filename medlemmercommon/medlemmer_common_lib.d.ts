@@ -1,4 +1,5 @@
-declare module medlemmer_common{
+declare module 'medlemmer_common'{
+    var INDMELDELSESDATO_COLUMNID:number;
     function getMedlemmerStamdata(): any;
     function getMedlemmerSheet(): any;
     function update(updateMedlem: any): void;

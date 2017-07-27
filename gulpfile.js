@@ -7,7 +7,7 @@ var livereload= require('gulp-livereload');
 //configuration
 
 var currentAppToWorkOn  = {
-	appDirectory: 'indmeldelseapp'
+	appDirectory: 'kontingentrapportapp'
 };
 var tsProject = p.typescript.createProject('tsconfig.json');
 
@@ -16,11 +16,10 @@ var typeScriptFilesGlob = ['*/src/**/*.ts'];
 var filesToWatch = typeScriptFilesGlob
 	.concat([currentAppToWorkOn.appDirectory + '/**/*.html',"!" + currentAppToWorkOn.appDirectory + "/**/*.clientjs.html"]);
 
-var defaultTaskSpec = ['tsc','creategsajs'];
+var defaultTaskSpec = ['tsc','creategsajs']; 
 
 var tasksToRunOnWatch = defaultTaskSpec
 	.concat(['sync-currentApp']);
-
 
 //Tasks
 gulp.task('tsc', function () {
