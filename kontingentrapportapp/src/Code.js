@@ -1,4 +1,4 @@
-import * as medlemmer_common from 'medlemmer_common';
+var _ = LodashGS.load();
 var MANUEL_REGISTRINGER_SPREADSHEET_ID = PropertiesService.getScriptProperties().getProperty("ManuelRegistreringerSheetId");
 var KONTINGENT_RAPPORT_TEMPLATE = "1nUDatf7SxoYOASDrVEeLjwGA2gtsYvS84RcwkaUcxDA";
 var CSV_HEADER_FORMAT = "\"Dato\";\"Tekst\";\"Bel\u00AFb\";\"Saldo\";\"Status\";\"Afstemt\"\r\n\"01.04.2016\";\"Jan Aasbjerg Peterse\";\"700,00\";\"435.039,07\";\"Udf\u00AFrt\";\"Nej\"";
@@ -62,14 +62,24 @@ function getLatestRapports() {
     else {
         throw "No kontingent rapport folder found";
     }
-    var rapporter = [];
-    var files = kontingentRapportFolder.getFiles();
-    while (files.hasNext()) {
-        var file = files.next();
-        //,lastUpdated:file.getLastUpdated()
-        //if((file.getLastUpdated() as Date).getFullYear()===currentYear)
-        //rapporter.push({url:file.getUrl(), name:file.getName(), id:file.getId(),date:swcadmin_common.convertToStringsDate(file.getLastUpdated())});
+    var files = [];
+    var fileIterator = kontingentRapportFolder.getFiles();
+    while (fileIterator.hasNext()) {
+        files.push(fileIterator.next());
     }
+    //sort by newest files, and return latest 5 and map to gui friendly object
+    var rapporter = _(files)
+        .sortBy(function (f) { return f.getLastUpdated(); })
+        .takeRight(5)
+        .value()
+        .map(function (f) {
+        return {
+            url: f.getUrl(),
+            name: f.getName(),
+            id: f.getId(),
+            date: swcadmin_common.convertToStringsDate(f.getLastUpdated())
+        };
+    });
     return rapporter;
 }
 function createNewRapport(formObject) {
@@ -135,27 +145,31 @@ function _parseCsv(file) {
     return result;
 }
 function _cloneRapportTemplate() {
-    var rapportFolder = _RAPPORTS_FOLDER;
-    var rapportFolders = DriveApp.getFoldersByName(rapportFolder);
+    var rapportFolders = DriveApp.getFoldersByName(_RAPPORTS_FOLDER);
+    var rapportFolder;
     if (rapportFolders.hasNext()) {
         rapportFolder = rapportFolders.next();
     }
     else {
-        rapportFolder = DriveApp.createFolder(rapportFolder);
+        rapportFolder = DriveApp.createFolder(_RAPPORTS_FOLDER);
     }
     return DriveApp
         .getFileById(KONTINGENT_RAPPORT_TEMPLATE)
         .makeCopy("Kontingent opgørelse " + new Date(), rapportFolder).getId();
 }
 function _copyIndmeldteData(newRapport, medlemmer) {
+    var currentYear = new Date().getFullYear();
     var targetSheet = newRapport.getSheetByName("Medlemsliste").clear();
     var valuesToCopy = medlemmer
         .getRange(1, 1, medlemmer.getLastRow(), medlemmer.getLastColumn())
         .getValues()
-        .filter(function (row) {
+        .filter(function (row, index) {
+        //filter out members indmeldt in current year
+        var indmeldDate = row[medlemmer_common.INDMELDELSESDATO_COLUMNID - 1];
+        if (indmeldDate != null && indmeldDate.getFullYear !== undefined && currentYear === indmeldDate.getFullYear())
+            return false;
         var udmeldtValue = row[medlemmer_common.UDMELDT_COLUMN_ID - 1];
-        return (udmeldtValue == ''
-            || udmeldtValue == medlemmer_common.UDMELDELSES_COLUMNHEADER);
+        return (udmeldtValue == '' || udmeldtValue == medlemmer_common.UDMELDELSES_COLUMNHEADER);
     });
     targetSheet.getRange(2, 1, valuesToCopy.length, valuesToCopy[0].length).setValues(valuesToCopy);
 }
@@ -166,7 +180,7 @@ function _insertKontoData(kontoData, newRapport) {
     sheet.getRange(1, 1, kontoData.length, kontoData[0].length).setValues(kontoData);
 }
 function test_searchForLastMailDate(email) {
-    var result = _searchForLastMailDate("xxx@gmail.com");
+    var result = searchForLastMailDate("xxx@gmail.com");
     alert(result);
 }
 function include(filename) {
