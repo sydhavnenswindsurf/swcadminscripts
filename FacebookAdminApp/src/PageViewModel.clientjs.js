@@ -1,0 +1,20 @@
+var FacebookAdminApp;
+(function (FacebookAdminApp) {
+    var PageViewModel = /** @class */ (function () {
+        function PageViewModel() {
+            console.log("hello from pageviewm");
+            /*  FB.getLoginStatus(function(response) {
+                         if (response.status === 'connected') {
+                             console.log('Logged in.');
+                         }
+                         else {
+                             console.log('calling facebook login....')
+                             FB.login();
+                         }
+             }); */
+            console.log("finished constructing pageviewm");
+        }
+        return PageViewModel;
+    }());
+    FacebookAdminApp.PageViewModel = PageViewModel;
+})(FacebookAdminApp || (FacebookAdminApp = {}));

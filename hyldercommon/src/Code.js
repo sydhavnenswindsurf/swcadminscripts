@@ -11,7 +11,7 @@ var RESERVERT_EMAIL_COLUMNINDEX = 1;
 var RESERVERT_HYLDENR_COLUMNINDEX = 0;
 function getReservedHylderInfo() {
     return getReservedHylderData()
-        .filter(function (row) { return row[RESERVERT_EMAIL_COLUMNINDEX] != ''; })
+        .filter(function (row) { return row[RESERVERT_EMAIL_COLUMNINDEX] !== ''; })
         .map(function (row) {
         return {
             email: row[RESERVERT_EMAIL_COLUMNINDEX],
@@ -50,13 +50,13 @@ function getHyldeDataValues() {
         .getRange(2, 1, lastRow, 5)
         .getValues()
         .filter(function (row) {
-        return row[1] != '';
+        return row[1] !== '';
     });
 }
 function addHylde(hyldenr, email, stamdata) {
     //get medlemsnummer
     var medlemsNummer = medlemmer_common.getMedlemsNummmer(email, stamdata);
-    if (medlemsNummer == -1) {
+    if (medlemsNummer === -1) {
         throw "kunne ikke finde medlemsnummer";
     }
     //Get hylde row

@@ -25,7 +25,7 @@ function loadLedigeHylder() {
     var hyldeIndex = 1;
     var medlemNummerIndex = 2;
     var result = values
-        .filter(function (row) { return row[medlemNummerIndex] == ""; })
+        .filter(function (row) { return row[medlemNummerIndex] === ""; })
         .map(function (row) {
         return {
             container: row[containerIndex],
@@ -33,7 +33,7 @@ function loadLedigeHylder() {
         };
     })
         .filter(function (outer) {
-        return swcadmin_common.getIndexOf(resHylder, function (inner) { return inner.hyldenr == outer.hyldenr; }) == -1;
+        return swcadmin_common.getIndexOf(resHylder, function (inner) { return inner.hyldenr === outer.hyldenr; }) === -1;
     });
     return {
         ledigeHylder: result,
@@ -48,8 +48,8 @@ function loadVenteliste() {
     var values = sheet.getRange(2, 1, sheet.getLastRow(), TOTAL_NUMBER_COLUMNS).getValues();
     var result = values
         .filter(function (row) {
-        return DONE_STATUS.indexOf(row[STATUS_COL - 1]) == -1
-            && row[EMAIL_COL - 1] != "";
+        return DONE_STATUS.indexOf(row[STATUS_COL - 1]) === -1
+            && row[EMAIL_COL - 1] !== "";
     })
         .map(function (row) {
         return {

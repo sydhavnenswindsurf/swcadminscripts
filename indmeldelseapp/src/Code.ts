@@ -69,8 +69,9 @@ function getLatestMail(email:string):any{
         .first()
         .value();
         
-    if(latestThread==null)
+    if(latestThread===null) {
         return {email:email};
+    }
     
     var latestMesssage = _.chain(latestThread.getMessages())
         .filter((mes)=>mes.getFrom().toLowerCase().indexOf(email.toLowerCase())!==-1)

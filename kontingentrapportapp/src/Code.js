@@ -9,7 +9,7 @@ function doGet() {
     return html.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME);
 }
 function udmeld(emails) {
-    if (emails == null || emails.length == 0)
+    if (emails === null || emails.length === 0)
         throw "ingen medlemmer angivet til udmeldelse";
     var stamdata = medlemmer_common.getMedlemmerStamdata();
     var result = [];
@@ -124,9 +124,9 @@ function _isValidCsvFormat(file) {
         .getDataAsString()
         .split("\n")[0]
         .split(";");
-    var result = headerData[0].match(/^"?Dato"?$/) != null
-        && headerData[1].match(/^"?Tekst"?$/) != null
-        && headerData[2].match(/^"?Bel\Sb"?$/) != null;
+    var result = headerData[0].match(/^"?Dato"?$/) !== null
+        && headerData[1].match(/^"?Tekst"?$/) !== null
+        && headerData[2].match(/^"?Bel\Sb"?$/) !== null;
     ;
     return result;
 }
@@ -166,10 +166,10 @@ function _copyIndmeldteData(newRapport, medlemmer) {
         .filter(function (row, index) {
         //filter out members indmeldt in current year
         var indmeldDate = row[medlemmer_common.INDMELDELSESDATO_COLUMNID - 1];
-        if (indmeldDate != null && indmeldDate.getFullYear !== undefined && currentYear === indmeldDate.getFullYear())
+        if (indmeldDate !== null && indmeldDate.getFullYear !== undefined && currentYear === indmeldDate.getFullYear())
             return false;
         var udmeldtValue = row[medlemmer_common.UDMELDT_COLUMN_ID - 1];
-        return (udmeldtValue == '' || udmeldtValue == medlemmer_common.UDMELDELSES_COLUMNHEADER);
+        return (udmeldtValue === '' || udmeldtValue === medlemmer_common.UDMELDELSES_COLUMNHEADER);
     });
     targetSheet.getRange(2, 1, valuesToCopy.length, valuesToCopy[0].length).setValues(valuesToCopy);
 }

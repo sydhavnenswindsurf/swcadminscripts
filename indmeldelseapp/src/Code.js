@@ -58,8 +58,9 @@ function getLatestMail(email) {
         .orderBy(function (t) { return t.getLastMessageDate(); }, "desc")
         .first()
         .value();
-    if (latestThread == null)
+    if (latestThread === null) {
         return { email: email };
+    }
     var latestMesssage = _.chain(latestThread.getMessages())
         .filter(function (mes) { return mes.getFrom().toLowerCase().indexOf(email.toLowerCase()) !== -1; })
         .orderBy(function (mes) { return mes.getDate(); }, "desc")
