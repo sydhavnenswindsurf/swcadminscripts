@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "test",
-    "restore":"npm install --no-save"
+    "restore":"npm install --no-save",
+    "watch":"gulp --watch",
+    "default":"gulp --watch"
   },
   "repository": {
     "type": "git",
