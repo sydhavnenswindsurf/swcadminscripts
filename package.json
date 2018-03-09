@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "test",
-    "restore":"npm install --no-save",
-    "watch":"gulp --watch",
-    "default":"gulp --watch"
+    "restore": "npm install --no-save",
+    "watch": "gulp --watch",
+    "default": "gulp --watch"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,13 @@
   },
   "homepage": "https://github.com/sydhavnenswindsurf/swcadminscripts#readme",
   "devDependencies": {
+    "@types/google-apps-script": "0.0.21",
+    "@types/gulp-typescript": "^2.13.0",
+    "@types/jquery": "^3.3.1",
+    "@types/knockout": "^3.4.52",
+    "@types/knockout.mapping": "^2.0.33",
+    "@types/lodash": "^4.14.104",
+    "@types/node": "^9.4.7",
     "del": "^2.2.2",
     "fs": "0.0.1-security",
     "gulp": "^3.9.1",
@@ -37,5 +44,6 @@
     "typescript": "^2.4.1",
     "typings": "^2.1.1",
     "vinyl-paths": "^2.1.0"
-  }
+  },
+  "dependencies": {}
 }
