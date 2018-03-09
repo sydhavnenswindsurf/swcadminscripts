@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "restore":"npm install --no-save"
   },
   "repository": {
     "type": "git",
@@ -31,7 +32,6 @@
     "gulp-typescript": "^3.0.2",
     "gulp-util": "^3.0.8",
     "node-google-apps-script": "^1.1.5",
-    "tsc": "file:node_modules/tsc",
     "typescript": "^2.4.1",
     "typings": "^2.1.1",
     "vinyl-paths": "^2.1.0"
