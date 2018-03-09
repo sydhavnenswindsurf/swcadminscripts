@@ -12,6 +12,7 @@
         "typings"
     ],
     "typeRoots": [
-      "node_modules/@types"
+      "node_modules/@types",
+      "custom_typings"
     ]
 }
