@@ -18,8 +18,8 @@ var filesToWatch = typeScriptFilesGlob
 
 var defaultTaskSpec = ['tsc','creategsajs']; 
 
-var tasksToRunOnWatch = defaultTaskSpec
-	.concat(['sync-currentApp']);
+var tasksToRunOnWatch = defaultTaskSpec;
+	// .concat(['sync-currentApp']);
 
 //Tasks
 gulp.task('tsc', function () {
