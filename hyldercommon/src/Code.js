@@ -1,5 +1,5 @@
 var HYLDESHEET_ID = UserProperties.getProperty("HylderSheetId");
-var HYLDELOGSHEET_ID = UserProperties.getProperty("HylderLogSheetId");
+var HYLDERLOGSHEET_ID = UserProperties.getProperty("HylderLogSheetId");
 var HYLDESHEET_NAME = "Hylder";
 var HYLDE_CONTAINER_COLUMN = 1;
 var HYLDE_HYLDENR_COLUMN = 2;
@@ -11,11 +11,19 @@ var RESERVERETHYLDER_SHEET = "reservationer";
 var RESERVERT_EMAIL_COLUMNINDEX = 1;
 var RESERVERT_HYLDENR_COLUMNINDEX = 0;
 function getHyldeLog() {
-    var hyldeLog = SpreadsheetApp.openById(HYLDELOGSHEET_ID)
+    var hyldeLog = SpreadsheetApp.openById(HYLDERLOGSHEET_ID)
         .getSheetByName("log");
     return hyldeLog
         .getRange(2, 1, hyldeLog.getLastRow(), 5)
-        .getValues();
+        .getValues()
+        .filter(function (row) {
+        return row[0] ? true : false; // filter out any empty rows
+    })
+        .map(function (row) {
+        row[4] = swcadmin_common.convertToStringsDate(row[4]); // gapps doesnt handle date objects client side
+        return row;
+    });
+    ;
 }
 function getReservedHylderInfo() {
     return getReservedHylderData()
