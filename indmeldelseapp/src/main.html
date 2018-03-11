@@ -5,7 +5,9 @@
     <base target="_top">
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <?!= swcadmin_common.includeSwcAdminExternalJsLibs()?>
+     <?!= swcadmin_common.includeSwcAdminExternalJsLibs()?>´
+
+     <?!= swcadmin_common.includeCommonStyling();?>
     
      <?!= swcadmin_common.includeCommonMethods();?>
      <?!= include('PageViewModel.clientjs'); ?>
@@ -85,7 +87,7 @@
                      <td class="status" id="status" data-bind="text: status"></td>
                      <td class="status lastmail-status-cell"> 
                         <a data-bind="attr:{href:sidsteMail().mailUrl},text: $root.getLatestMailDisplay($data.sidsteMail())" target="_blank"></a>
-                        <div class="message-view" style="display:none;" data-bind="css:{ hascontent:sidsteMail().mailContent!=null}">
+                        <div class="popup message-view" style="display:none;" data-bind="css:{ hascontent:sidsteMail().mailContent!=null}">
                           <span data-bind="text:sidsteMail().mailContent"></span>
                         </div>
                         

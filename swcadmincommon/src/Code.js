@@ -79,6 +79,10 @@ function includeCommonMethods() {
     return HtmlService.createHtmlOutputFromFile('googleApi')
         .getContent();
 }
+function includeCommonStyling() {
+    return HtmlService.createHtmlOutputFromFile('styling')
+        .getContent();
+}
 function includeSwcAdminExternalJsLibs() {
     return HtmlService.createHtmlOutputFromFile('swcAdminExternalJsLibs')
         .getContent();
