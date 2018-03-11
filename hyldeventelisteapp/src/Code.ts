@@ -17,7 +17,7 @@ var TOTAL_NUMBER_COLUMNS = 9;
 
 var DONE_STATUS =["Tildelt","Fortrudt","Fjernet"];
 
-
+// @ts-ignore
 function doGet() {
       
   var html= HtmlService.createTemplateFromFile('main');
@@ -183,7 +183,7 @@ function removeFromList(email){
   return {success:true}
 }
 
-
+// @ts-ignore
 function include(filename) {
   return HtmlService.createHtmlOutputFromFile(filename)
       .getContent();

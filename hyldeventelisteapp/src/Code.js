@@ -12,6 +12,7 @@ var HYLDEINVITE_TEMPLATE_ID = "1Kgo7WGLOQkm_hscTNjLb7ucovmCqE1wy0QHADO_Nw_Y";
 var HYLDECONFIRM_TEMPLATE_ID = "1hZ62lKRZi7e8uu55Isq32SlxKgJfuzxyburQel_ndvE";
 var TOTAL_NUMBER_COLUMNS = 9;
 var DONE_STATUS = ["Tildelt", "Fortrudt", "Fjernet"];
+// @ts-ignore
 function doGet() {
     var html = HtmlService.createTemplateFromFile('main');
     return html.evaluate()
@@ -139,6 +140,7 @@ function removeFromList(email) {
     setStatus(email, "Fjernet");
     return { success: true };
 }
+// @ts-ignore
 function include(filename) {
     return HtmlService.createHtmlOutputFromFile(filename)
         .getContent();

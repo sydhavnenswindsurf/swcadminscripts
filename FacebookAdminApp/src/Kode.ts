@@ -1,3 +1,4 @@
+// @ts-ignore
 function doGet(): any{
     return buildGui();
 }
@@ -8,7 +9,7 @@ function buildGui(): any {
 
 }  
 
-
+// @ts-ignore
 function include(filename: any): any{
       return HtmlService.createHtmlOutputFromFile(filename)
         .getContent(); 
