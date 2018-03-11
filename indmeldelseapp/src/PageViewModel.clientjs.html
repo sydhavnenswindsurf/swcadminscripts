@@ -1,7 +1,7 @@
 <script type="text/javascript"> 
 var IndmeldelseApp;
 (function (IndmeldelseApp) {
-    var PageViewModel = (function () {
+    var PageViewModel = /** @class */ (function () {
         /**
          *
          */
@@ -112,7 +112,7 @@ var IndmeldelseApp;
         return PageViewModel;
     }());
     IndmeldelseApp.PageViewModel = PageViewModel;
-    var GuiEnhancements = (function () {
+    var GuiEnhancements = /** @class */ (function () {
         function GuiEnhancements(tableSelector) {
             this.tableSelector = tableSelector;
             this.hookupMessageDisplay(tableSelector);
@@ -136,7 +136,7 @@ var IndmeldelseApp;
         return GuiEnhancements;
     }());
     IndmeldelseApp.GuiEnhancements = GuiEnhancements;
-    var LogMessageHandler = (function () {
+    var LogMessageHandler = /** @class */ (function () {
         function LogMessageHandler(logMessages) {
             if (logMessages === void 0) { logMessages = ko.observableArray([]); }
             this.logMessages = logMessages;
