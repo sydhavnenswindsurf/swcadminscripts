@@ -9,8 +9,21 @@ function doGet() {
   .setSandboxMode(HtmlService.SandboxMode.IFRAME);
 }
 
-function getHyldeLog (){
-  return hyldercommon.getHyldeLog();
+function getHyldeLog (hyldeNummer){
+  return hyldercommon
+  .getHyldeLog()
+  .filter(function(row){
+    return row[0] === hyldeNummer;
+  })
+  .map(function(row){
+    return {
+      hyldenr: row[0],
+      handling: row[1],
+      medlemsnummer:row[2],
+      navn: row[3],
+      datetime:row[4]
+    }
+  });
 }
 
 function loadHylder(){
