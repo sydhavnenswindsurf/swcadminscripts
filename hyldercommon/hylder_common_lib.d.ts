@@ -10,5 +10,6 @@ declare module hylder_common{
     function getHyldeSheet(): any;
     function getHyldeDataValues(): any;
     function addHylde(hyldenr: any, email: any, stamdata: any): void;
+    function getHyldeLog():object[][];
 }
 
