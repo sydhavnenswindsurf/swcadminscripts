@@ -9,6 +9,9 @@ function doGet() {
   .setSandboxMode(HtmlService.SandboxMode.IFRAME);
 }
 
+function getHyldeLog (){
+  return hyldercommon.getHyldeLog();
+}
 
 function loadHylder(){
   
