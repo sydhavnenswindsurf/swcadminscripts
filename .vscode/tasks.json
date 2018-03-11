@@ -21,7 +21,7 @@
         {
             "type": "gulp",
             "task": "sync-currentApp",
-            "problemMatcher": [],
+            "problemMatcher": []
         },
         {
             "type": "npm",
@@ -38,6 +38,11 @@
             "problemMatcher": [
                 "$tsc-watch"
             ]
+        },
+        {
+            "type": "npm",
+            "script": "gapps-auth",
+            "problemMatcher": []
         }
     ]
 }
