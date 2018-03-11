@@ -32,6 +32,7 @@
          <td> 
              <button class="add" data-bind="enable: !$root.isCallingServer(),visible: navn()=='', click:function(){$root.add($data);}">Tilføj</button>
              <button class="remove" data-bind="enable: !$root.isCallingServer(),visible: navn()!='', click:function (){$root.remove($data);}">Fjern</button>
+             <button class="log" data-bind="click: function(){$root.openLog($data.hyldenr)}">Log</button>
              </td>
              
          </tr>
@@ -42,7 +43,7 @@
      
    </section>
    <?!= include('style'); ?>
-  <?!= include('PageViewModel'); ?>
+  <?!= include('PageViewModel.clientjs'); ?>
   <script>
   $(function(){
        ko.applyBindings(new PageViewModel());

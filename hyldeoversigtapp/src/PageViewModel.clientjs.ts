@@ -67,16 +67,16 @@ function PageViewModel(){
           })
           .add({newOwner:hyldeInfo.newOwner(), hyldenr:hyldeInfo.hyldenr});
      }
-     this.getHyldeLog= function(){
+     this.openLog = function(hyldenummer:number){
+         console.log(hyldenummer);return;
         callGoogleApi(function(result){          
           console.log(result);
           
       },function(message){
         console.log(message);        
-      }).getHyldeLog();
+      }).getHyldeLog(hyldenummer);
      }
      self.loadHylder();
-     self.getHyldeLog();
   }  
 
 
