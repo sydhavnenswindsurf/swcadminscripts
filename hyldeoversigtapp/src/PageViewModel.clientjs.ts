@@ -1,5 +1,4 @@
-<script type="text/javascript"> 
-  function PageViewModel(){
+function PageViewModel(){
      var self = this;
      this.hylder =  ko.observableArray([]);
      
@@ -14,11 +13,11 @@
      this.isCallingServer= ko.observable(false);
      this.loadHylder =function(){
           this.isCallingServer(true);
-          google.script.run.withSuccessHandler(function(result){    
+          callGoogleApi(function(result){    
          
           self.updateHylder(result);
           self.isCallingServer(false);
-          }).loadHylder();
+          }, (error)=>console.log(error)).loadHylder();
      }
      this.updateHylder = function (result){
          self.hylder(result.map(function(item)
@@ -35,12 +34,12 @@
           this.isCallingServer(true);
           var dataToSend=ko.mapping.toJS(hyldeInfo);
           console.log(dataToSend);
-          google.script.run.withSuccessHandler(function(result){         
+          callGoogleApi(function(result){         
           
               self.updateHylder(result);
               self.isCallingServer(false);
           
-          }).withFailureHandler(function(message){
+          }, function(message){
           
             self.isCallingServer(false);
             alert(message);
@@ -48,19 +47,19 @@
           }).remove(dataToSend);
      }
      this.add = function(hyldeInfo){
-          if(hyldeInfo.newOwner()==''){
+          if(hyldeInfo.newOwner()===''){
               alert("Du skal udfylde med et medlems email adreese");
               return;
           }
           
           this.isCallingServer(true);
-          google.script.run.withSuccessHandler(function(result){
+          callGoogleApi(function(result){
           
               console.log(result);
               hyldeInfo.navn(result.newlyAddedNavn);
               self.isCallingServer(false);
               
-          }).withFailureHandler(function(message){
+          },function(message){
             console.log(message);
             self.isCallingServer(false);
             alert("Kunne ikke tilføje medlem: \n" + message);
@@ -68,10 +67,17 @@
           })
           .add({newOwner:hyldeInfo.newOwner(), hyldenr:hyldeInfo.hyldenr});
      }
+     this.getHyldeLog= function(){
+        callGoogleApi(function(result){          
+          console.log(result);
+          
+      },function(message){
+        console.log(message);        
+      }).getHyldeLog();
+     }
      self.loadHylder();
-  }
-</script>
-  
+     self.getHyldeLog();
+  }  
 
 
 
