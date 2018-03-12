@@ -1,156 +1,145 @@
-function PageViewModel(){
-     var self = this;
-     this.hylder =  ko.observableArray([]);
-     
-     this.groupedHylder = ko.computed(function(){
-        var result= [];
-        _.forOwn(_.groupBy(this.hylder(),"container"), function(value, key) {
-           result.push({
-               groupName:key,
-               values:value.map(item=>{
-                    item.showLog = ko.observable(false);
-                    item.loadingLog = ko.observable(false);
-                    item.log= ko.observable();
-                    return item;
-               })
-            })
-         });
-        return result;
-     
-     },this);
-     this.isCallingServer= ko.observable(false);
-     this.loadHylder =function(){
-          this.isCallingServer(true);
-          callGoogleApi(function(result){    
-         
-          self.updateHylder(result);
-          self.isCallingServer(false);
-          }, (error)=>console.log(error)).loadHylder();
-     }
-     this.updateHylder = function (result){
-         self.hylder(result.map(function(item)
-         {
-            item.newOwner = ko.observable("");
-            item.navn = ko.observable(item.navn);
-            return item;
-         }));
-     }
-     this.remove = function(hyldeInfo){
-          if(!confirm("Dette fjerner personen fra hylden?")){
-              return;
-          }
-          this.isCallingServer(true);
-          var dataToSend=ko.mapping.toJS(hyldeInfo);
-          console.log(dataToSend);
-          callGoogleApi(function(result){         
-          
-              self.updateHylder(result);
-              self.isCallingServer(false);
-          
-          }, function(message){
-          
-            self.isCallingServer(false);
-            alert(message);
-            
-          }).remove(dataToSend);
-     }
-     this.add = function(hyldeInfo){
-          if(hyldeInfo.newOwner()===''){
-              alert("Du skal udfylde med et medlems email adreese");
-              return;
-          }
-          
-          this.isCallingServer(true);
-          callGoogleApi(function(result){
-          
-              console.log(result);
-              hyldeInfo.navn(result.newlyAddedNavn);
-              self.isCallingServer(false);
-              
-          },function(message){
-            console.log(message);
-            self.isCallingServer(false);
-            alert("Kunne ikke tilføje medlem: \n" + message);
-            
-          })
-          .add({newOwner:hyldeInfo.newOwner(), hyldenr:hyldeInfo.hyldenr});
-     }
-     this.openLog = (hyldeItem:{
-         hyldenr:number;
-         showLog:KnockoutObservable<boolean>;
-         loadingLog:KnockoutObservable<boolean>;
-         log:KnockoutObservable<{
+import * as lodash from 'lodash';
+declare let _:lodash.PH;
+namespace Hyldeoversigt{
+    export class PageViewModel{
+    
+        constructor() {
+         this.loadHylder();
+         this.loadHyldeLog();
+        }
+         private hylder =  ko.observableArray([]);
+        
+         private hyldeLog: KnockoutObservable<{
+            hyldenr:string;
             handling:string;
             navn:string;
             medlemsnummer:number;
-            dato;            
-         }[]>;
-     })=>{
-         var isShowingAlready = hyldeItem.showLog();
-        // hide all others
-        self.groupedHylder().forEach(group=>group.values.forEach(item=>item.showLog(false)));
-        // toggle current
-         if(isShowingAlready)
-         {
-             // we just hid it and it was showing so we return...
-             return;
-         }
+            dato:string; 
+            dateObject:Date;           
+         }[]> = ko.observable([]);
+         private groupedHylder = ko.computed(()=>{
+            var result= [];
+            _.forOwn(_.groupBy(this.hylder(),"container"), (value, key) =>{
+               result.push({
+                   groupName:key,
+                   values:value.map(item=>{
+                        item.showLog = ko.observable(false);
+                        item.log= ko.computed(()=>{
+                            return _(this.hyldeLog())
+                            .filter(log=>log.hyldenr === item.hyldenr)
+                            .orderBy("dateObject","desc")
+                            .value()
+                        });
+                        return item;
+                   })
+                })
+             });
+            return result;
+         
+         },this);
+    
+         private isCallingServer = ko.observable(false);
 
-        hyldeItem.showLog(true);
-        hyldeItem.loadingLog(true);
-        console.log(hyldeItem.hyldenr);
-        callGoogleApi((result :{ 
-            hyldenr: number;
-            handling: string;
-            medlemsnummer:number;
-            navn: string;
-            datetime:string; 
-        }[])=>{          
-            hyldeItem.loadingLog(false);
-            hyldeItem.log(
-                _(result)
-                .map(item=>{
+         loadHylder = () => {
+              this.isCallingServer(true);
+              callGoogleApi((result)=>{    
+             
+              this.updateHylder(result);
+              this.isCallingServer(false);
+              }, (error)=>console.log(error)).loadHylder();
+         }
+         updateHylder = (result) => {
+             this.hylder(result.map((item)=>
+             {
+                item.newOwner = ko.observable("");
+                item.navn = ko.observable(item.navn);
+                return item;
+             }));
+         }
+         remove = (hyldeInfo)=>{
+              if(!confirm("Dette fjerner personen fra hylden?")){
+                  return;
+              }
+              this.isCallingServer(true);
+              var dataToSend=ko.mapping.toJS(hyldeInfo);
+              console.log(dataToSend);
+              callGoogleApi((result)=>{         
+              
+                  this.updateHylder(result);
+                  this.isCallingServer(false);
+              
+              }, (message)=>{
+              
+                this.isCallingServer(false);
+                alert(message);
+                
+              }).remove(dataToSend);
+         }
+         add = (hyldeInfo)=>{
+              if(hyldeInfo.newOwner()===''){
+                  alert("Du skal udfylde med et medlems email adreese");
+                  return;
+              }
+              
+              this.isCallingServer(true);
+              callGoogleApi((result)=>{
+              
+                  console.log(result);
+                  hyldeInfo.navn(result.newlyAddedNavn);
+                  this.isCallingServer(false);
+                  
+              },(message)=>{
+                console.log(message);
+                this.isCallingServer(false);
+                alert("Kunne ikke tilføje medlem: \n" + message);
+                
+              })
+              .add({newOwner:hyldeInfo.newOwner(), hyldenr:hyldeInfo.hyldenr});
+         }
+         openLog = (hyldeItem:{
+             hyldenr:number;
+             showLog:KnockoutObservable<boolean>;
+             log:KnockoutObservable<{
+                handling:string;
+                navn:string;
+                medlemsnummer:number;
+                dato;            
+             }[]>;
+         })=>{
+             var isShowingAlready = hyldeItem.showLog();
+            // hide all others
+            this.groupedHylder().forEach(group=>group.values.forEach(item=>item.showLog(false)));
+            // toggle current
+             if(isShowingAlready)
+             {
+                 // we just hid it and it was showing so we return...
+                 return;
+             }
+    
+            hyldeItem.showLog(true);
+            console.log(hyldeItem.hyldenr);
+         }
+         loadHyldeLog = () => {
+            callGoogleApi((result :{ 
+                hyldenr: string;
+                handling: string;
+                medlemsnummer:number;
+                navn: string;
+                datetime:string; 
+            }[])=>{    
+                this.hyldeLog(result.map(item=>{
+                    // add date information client side (gapps serverside doesnt like Date object)
                     const dateObject= new Date(item.datetime);
                     return {
                         ...item, 
                         dateObject, 
                         dato:dateObject.toLocaleDateString()
                     };
-                })
-                .orderBy("dateObject","desc")
-                .value()
-              
-            );
-        },(message)=>{
-            hyldeItem.loadingLog(false);
-            console.log(message);     
-        }).getHyldeLog(hyldeItem.hyldenr);
-     }
-     self.loadHylder();
-  }  
-// export class GuiEnhancements{
-//     constructor(private logButtonSelector: string){
-//         this.hookupMessageDisplay(logButtonSelector);
-//     }
-//      private hookupMessageDisplay(tableSelector: string): any {
-//         const lastCellSelector =  "td.lastmail-status-cell";
-//         const messageWithContentSelector = "div.message-view.hascontent";
-
-//         $(tableSelector).on('mouseenter',lastCellSelector, function () {
-//             var $currentCell = $(this);
-//             var message = $currentCell.children(messageWithContentSelector);
-//             if (message.length === 0)
-//                 return;
-//             //Calculate placement
-//             message.css("top","-" + (message.height()/4)+"px")
-//             message.fadeIn();
-//         });
-//         $(tableSelector).on('mouseleave', lastCellSelector, function () {
-//             $(this).children(messageWithContentSelector).fadeOut();
-//         });
-//     }
-// }
-
-
-
-
+                }));
+            },(error)=> {
+                console.log(error);
+            })
+            .getHyldeLog();
+         }
+      }  
+}

@@ -9,12 +9,12 @@ function doGet() {
   .setSandboxMode(HtmlService.SandboxMode.IFRAME);
 }
 
-function getHyldeLog (hyldeNummer){
+function getHyldeLog (){
   return hyldercommon
   .getHyldeLog()
-  .filter(function(row){
-    return row[0] === hyldeNummer;
-  })
+  // .filter(function(row){
+  //   return row[0] === hyldeNummer;
+  // })
   .map(function(row){
     return {
       hyldenr: row[0],

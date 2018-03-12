@@ -7,119 +7,109 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     }
     return t;
 };
-function PageViewModel() {
-    var self = this;
-    this.hylder = ko.observableArray([]);
-    this.groupedHylder = ko.computed(function () {
-        var result = [];
-        _.forOwn(_.groupBy(this.hylder(), "container"), function (value, key) {
-            result.push({
-                groupName: key,
-                values: value.map(function (item) {
-                    item.showLog = ko.observable(false);
-                    item.loadingLog = ko.observable(false);
-                    item.log = ko.observable();
+var Hyldeoversigt;
+(function (Hyldeoversigt) {
+    var PageViewModel = /** @class */ (function () {
+        function PageViewModel() {
+            var _this = this;
+            this.hylder = ko.observableArray([]);
+            this.hyldeLog = ko.observable([]);
+            this.groupedHylder = ko.computed(function () {
+                var result = [];
+                _.forOwn(_.groupBy(_this.hylder(), "container"), function (value, key) {
+                    result.push({
+                        groupName: key,
+                        values: value.map(function (item) {
+                            item.showLog = ko.observable(false);
+                            item.log = ko.computed(function () {
+                                return _(_this.hyldeLog())
+                                    .filter(function (log) { return log.hyldenr === item.hyldenr; })
+                                    .orderBy("dateObject", "desc")
+                                    .value();
+                            });
+                            return item;
+                        })
+                    });
+                });
+                return result;
+            }, this);
+            this.isCallingServer = ko.observable(false);
+            this.loadHylder = function () {
+                _this.isCallingServer(true);
+                callGoogleApi(function (result) {
+                    _this.updateHylder(result);
+                    _this.isCallingServer(false);
+                }, function (error) { return console.log(error); }).loadHylder();
+            };
+            this.updateHylder = function (result) {
+                _this.hylder(result.map(function (item) {
+                    item.newOwner = ko.observable("");
+                    item.navn = ko.observable(item.navn);
                     return item;
+                }));
+            };
+            this.remove = function (hyldeInfo) {
+                if (!confirm("Dette fjerner personen fra hylden?")) {
+                    return;
+                }
+                _this.isCallingServer(true);
+                var dataToSend = ko.mapping.toJS(hyldeInfo);
+                console.log(dataToSend);
+                callGoogleApi(function (result) {
+                    _this.updateHylder(result);
+                    _this.isCallingServer(false);
+                }, function (message) {
+                    _this.isCallingServer(false);
+                    alert(message);
+                }).remove(dataToSend);
+            };
+            this.add = function (hyldeInfo) {
+                if (hyldeInfo.newOwner() === '') {
+                    alert("Du skal udfylde med et medlems email adreese");
+                    return;
+                }
+                _this.isCallingServer(true);
+                callGoogleApi(function (result) {
+                    console.log(result);
+                    hyldeInfo.navn(result.newlyAddedNavn);
+                    _this.isCallingServer(false);
+                }, function (message) {
+                    console.log(message);
+                    _this.isCallingServer(false);
+                    alert("Kunne ikke tilføje medlem: \n" + message);
                 })
-            });
-        });
-        return result;
-    }, this);
-    this.isCallingServer = ko.observable(false);
-    this.loadHylder = function () {
-        this.isCallingServer(true);
-        callGoogleApi(function (result) {
-            self.updateHylder(result);
-            self.isCallingServer(false);
-        }, function (error) { return console.log(error); }).loadHylder();
-    };
-    this.updateHylder = function (result) {
-        self.hylder(result.map(function (item) {
-            item.newOwner = ko.observable("");
-            item.navn = ko.observable(item.navn);
-            return item;
-        }));
-    };
-    this.remove = function (hyldeInfo) {
-        if (!confirm("Dette fjerner personen fra hylden?")) {
-            return;
+                    .add({ newOwner: hyldeInfo.newOwner(), hyldenr: hyldeInfo.hyldenr });
+            };
+            this.openLog = function (hyldeItem) {
+                var isShowingAlready = hyldeItem.showLog();
+                // hide all others
+                _this.groupedHylder().forEach(function (group) { return group.values.forEach(function (item) { return item.showLog(false); }); });
+                // toggle current
+                if (isShowingAlready) {
+                    // we just hid it and it was showing so we return...
+                    return;
+                }
+                hyldeItem.showLog(true);
+                console.log(hyldeItem.hyldenr);
+            };
+            this.loadHyldeLog = function () {
+                callGoogleApi(function (result) {
+                    _this.hyldeLog(result.map(function (item) {
+                        // add date information client side (gapps serverside doesnt like Date object)
+                        var dateObject = new Date(item.datetime);
+                        return __assign({}, item, { dateObject: dateObject, dato: dateObject.toLocaleDateString() });
+                    }));
+                }, function (error) {
+                    console.log(error);
+                })
+                    .getHyldeLog();
+            };
+            this.loadHylder();
+            this.loadHyldeLog();
         }
-        this.isCallingServer(true);
-        var dataToSend = ko.mapping.toJS(hyldeInfo);
-        console.log(dataToSend);
-        callGoogleApi(function (result) {
-            self.updateHylder(result);
-            self.isCallingServer(false);
-        }, function (message) {
-            self.isCallingServer(false);
-            alert(message);
-        }).remove(dataToSend);
-    };
-    this.add = function (hyldeInfo) {
-        if (hyldeInfo.newOwner() === '') {
-            alert("Du skal udfylde med et medlems email adreese");
-            return;
-        }
-        this.isCallingServer(true);
-        callGoogleApi(function (result) {
-            console.log(result);
-            hyldeInfo.navn(result.newlyAddedNavn);
-            self.isCallingServer(false);
-        }, function (message) {
-            console.log(message);
-            self.isCallingServer(false);
-            alert("Kunne ikke tilføje medlem: \n" + message);
-        })
-            .add({ newOwner: hyldeInfo.newOwner(), hyldenr: hyldeInfo.hyldenr });
-    };
-    this.openLog = function (hyldeItem) {
-        var isShowingAlready = hyldeItem.showLog();
-        // hide all others
-        self.groupedHylder().forEach(function (group) { return group.values.forEach(function (item) { return item.showLog(false); }); });
-        // toggle current
-        if (isShowingAlready) {
-            // we just hid it and it was showing so we return...
-            return;
-        }
-        hyldeItem.showLog(true);
-        hyldeItem.loadingLog(true);
-        console.log(hyldeItem.hyldenr);
-        callGoogleApi(function (result) {
-            hyldeItem.loadingLog(false);
-            hyldeItem.log(_(result)
-                .map(function (item) {
-                var dateObject = new Date(item.datetime);
-                return __assign({}, item, { dateObject: dateObject, dato: dateObject.toLocaleDateString() });
-            })
-                .orderBy("dateObject", "desc")
-                .value());
-        }, function (message) {
-            hyldeItem.loadingLog(false);
-            console.log(message);
-        }).getHyldeLog(hyldeItem.hyldenr);
-    };
-    self.loadHylder();
-}
-// export class GuiEnhancements{
-//     constructor(private logButtonSelector: string){
-//         this.hookupMessageDisplay(logButtonSelector);
-//     }
-//      private hookupMessageDisplay(tableSelector: string): any {
-//         const lastCellSelector =  "td.lastmail-status-cell";
-//         const messageWithContentSelector = "div.message-view.hascontent";
-//         $(tableSelector).on('mouseenter',lastCellSelector, function () {
-//             var $currentCell = $(this);
-//             var message = $currentCell.children(messageWithContentSelector);
-//             if (message.length === 0)
-//                 return;
-//             //Calculate placement
-//             message.css("top","-" + (message.height()/4)+"px")
-//             message.fadeIn();
-//         });
-//         $(tableSelector).on('mouseleave', lastCellSelector, function () {
-//             $(this).children(messageWithContentSelector).fadeOut();
-//         });
-//     }
-// }
+        return PageViewModel;
+    }());
+    Hyldeoversigt.PageViewModel = PageViewModel;
+})(Hyldeoversigt || (Hyldeoversigt = {}));
 
 </script>
