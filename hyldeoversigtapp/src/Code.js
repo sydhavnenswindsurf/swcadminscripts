@@ -44,6 +44,13 @@ function remove(info){
   var sheet = hyldercommon.getHyldeSheet();
   sheet.getRange(rowId,hyldercommon.HYLDE_MEDLEMSNUMMER_COLUMN).setValue('');
   
+  hyldercommon.addHyldeLogEvent({
+    hyldenr: info.hyldenr,
+    handling:"fjernet",
+    navn:info.navn,
+    medlemsNummer:info.medlemsnummer
+  });
+
   return loadHylder();
 }
 
