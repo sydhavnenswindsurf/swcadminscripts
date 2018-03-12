@@ -23,7 +23,22 @@ function getHyldeLog() {
         row[4] = swcadmin_common.convertToStringsDate(row[4]); // gapps doesnt handle date objects client side
         return row;
     });
-    ;
+}
+function test_addHyldeLogEvent() {
+    addHyldeLogEvent({
+        hyldenr: "test1",
+        handling: "tilføjet",
+        navn: "krøllebølle",
+        medlemsNummer: 9999999
+    });
+}
+function addHyldeLogEvent(logEvent) {
+    var hyldeLog = SpreadsheetApp.openById(HYLDERLOGSHEET_ID)
+        .getSheetByName("log");
+    var hylde = hyldeLog
+        .appendRow([logEvent.hyldenr, logEvent.handling, logEvent.medlemsNummer, logEvent.navn, new Date()]);
+    // .getRange(hyldeLog.getLastRow() + 1,1,1,5)
+    // .setValues([[logEvent.hyldenr, logEvent.handling, logEvent.medlemsNummer, logEvent.navn, new Date()]]);  
 }
 function getReservedHylderInfo() {
     return getReservedHylderData()

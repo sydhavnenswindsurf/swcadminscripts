@@ -1,4 +1,3 @@
-
 var HYLDESHEET_ID=UserProperties.getProperty("HylderSheetId");
 var HYLDERLOGSHEET_ID=UserProperties.getProperty("HylderLogSheetId");
 var HYLDESHEET_NAME="Hylder";
@@ -18,17 +17,39 @@ function getHyldeLog(){
   .getSheetByName("log");
   
   return hyldeLog
-  .getRange(2,1,hyldeLog.getLastRow(), 5)
-  .getValues()
-  .filter(function(row){
-    return row[0] ? true:false; // filter out any empty rows
-  })
-  .map(function(row){
-    row[4] = swcadmin_common.convertToStringsDate(row[4] as Date); // gapps doesnt handle date objects client side
-    return row;
-});;
+    .getRange(2,1,hyldeLog.getLastRow(), 5)
+    .getValues()
+    .filter(function(row){
+      return row[0] ? true:false; // filter out any empty rows
+    })
+    .map(function(row){
+      row[4] = swcadmin_common.convertToStringsDate(row[4] as Date); // gapps doesnt handle date objects client side
+      return row;
+    });
 }
 
+function test_addHyldeLogEvent(){
+  addHyldeLogEvent({
+    hyldenr:"test1",
+    handling:"tilføjet",
+    navn:"krøllebølle",
+    medlemsNummer:9999999
+  });
+}
+function addHyldeLogEvent(logEvent:{
+  hyldenr: string;
+  handling:string;
+  navn:string;
+  medlemsNummer:number;
+}){
+  var hyldeLog=SpreadsheetApp.openById(HYLDERLOGSHEET_ID)
+  .getSheetByName("log");
+  
+  var hylde = hyldeLog
+    .appendRow([logEvent.hyldenr, logEvent.handling, logEvent.medlemsNummer, logEvent.navn, new Date()]);
+    // .getRange(hyldeLog.getLastRow() + 1,1,1,5)
+    // .setValues([[logEvent.hyldenr, logEvent.handling, logEvent.medlemsNummer, logEvent.navn, new Date()]]);  
+}
 function getReservedHylderInfo(){
   return getReservedHylderData()
   .filter(function(row){return row[RESERVERT_EMAIL_COLUMNINDEX]!=='';})
