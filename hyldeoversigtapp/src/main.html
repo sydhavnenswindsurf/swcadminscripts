@@ -70,7 +70,9 @@
   <?!= include('PageViewModel.clientjs'); ?>
   <script>
   $(function(){
-       ko.applyBindings(new Hyldeoversigt.PageViewModel());
+    const vm = new Hyldeoversigt.PageViewModel();
+    new Hyldeoversigt.GuiEnhancments(".log-popup",vm);
+    ko.applyBindings(vm);
   });
   </script>
   </body>

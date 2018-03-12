@@ -39,7 +39,10 @@ namespace Hyldeoversigt{
          },this);
     
          private isCallingServer = ko.observable(false);
-
+         
+         closeAnyLogs = ()=>{
+            this.getAllHyldeItems().forEach(item=>item.showLog(false));
+         }
          loadHylder = () => {
               this.isCallingServer(true);
               callGoogleApi((result)=>{    
@@ -96,6 +99,10 @@ namespace Hyldeoversigt{
               })
               .add({newOwner:hyldeInfo.newOwner(), hyldenr:hyldeInfo.hyldenr});
          }
+
+         getAllHyldeItems=()=>{
+            return _.flatten(this.groupedHylder().map(g=>g.values));             
+         }
          openLog = (hyldeItem:{
              hyldenr:number;
              showLog:KnockoutObservable<boolean>;
@@ -108,7 +115,7 @@ namespace Hyldeoversigt{
          })=>{
              var isShowingAlready = hyldeItem.showLog();
             // hide all others
-            this.groupedHylder().forEach(group=>group.values.forEach(item=>item.showLog(false)));
+           this.closeAnyLogs();
             // toggle current
              if(isShowingAlready)
              {
@@ -142,4 +149,22 @@ namespace Hyldeoversigt{
             .getHyldeLog();
          }
       }  
+
+      export class GuiEnhancments{
+          constructor(
+              private logPopupSelector:string, 
+              private viewModel: PageViewModel
+            ) {
+            $(document).mouseup((e)=> 
+            {
+                var container = $(logPopupSelector);
+            
+                // if the target of the click isn't the container nor a descendant of the container
+                if (!container.is(e.target) && container.has(e.target).length === 0) 
+                {
+                    this.viewModel.closeAnyLogs();
+                }
+            });
+          }
+      }
 }

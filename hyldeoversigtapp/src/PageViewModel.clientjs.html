@@ -34,6 +34,9 @@ var Hyldeoversigt;
                 return result;
             }, this);
             this.isCallingServer = ko.observable(false);
+            this.closeAnyLogs = function () {
+                _this.getAllHyldeItems().forEach(function (item) { return item.showLog(false); });
+            };
             this.loadHylder = function () {
                 _this.isCallingServer(true);
                 callGoogleApi(function (result) {
@@ -80,10 +83,13 @@ var Hyldeoversigt;
                 })
                     .add({ newOwner: hyldeInfo.newOwner(), hyldenr: hyldeInfo.hyldenr });
             };
+            this.getAllHyldeItems = function () {
+                return _.flatten(_this.groupedHylder().map(function (g) { return g.values; }));
+            };
             this.openLog = function (hyldeItem) {
                 var isShowingAlready = hyldeItem.showLog();
                 // hide all others
-                _this.groupedHylder().forEach(function (group) { return group.values.forEach(function (item) { return item.showLog(false); }); });
+                _this.closeAnyLogs();
                 // toggle current
                 if (isShowingAlready) {
                     // we just hid it and it was showing so we return...
@@ -110,6 +116,22 @@ var Hyldeoversigt;
         return PageViewModel;
     }());
     Hyldeoversigt.PageViewModel = PageViewModel;
+    var GuiEnhancments = /** @class */ (function () {
+        function GuiEnhancments(logPopupSelector, viewModel) {
+            var _this = this;
+            this.logPopupSelector = logPopupSelector;
+            this.viewModel = viewModel;
+            $(document).mouseup(function (e) {
+                var container = $(logPopupSelector);
+                // if the target of the click isn't the container nor a descendant of the container
+                if (!container.is(e.target) && container.has(e.target).length === 0) {
+                    _this.viewModel.closeAnyLogs();
+                }
+            });
+        }
+        return GuiEnhancments;
+    }());
+    Hyldeoversigt.GuiEnhancments = GuiEnhancments;
 })(Hyldeoversigt || (Hyldeoversigt = {}));
 
 </script>
