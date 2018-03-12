@@ -25,8 +25,8 @@
          <td data-bind="text: container"></td>
          <td>
               <input placeholder="Indtast e-mail adresse" class="new-owner" type="text" data-bind="visible: navn()=='', value:newOwner">
-              <div data-bind="visible: email != ''">
-               <p class="navn" data-bind="text: navn"></p> <p class="email" data-bind="text: '(' + email+')'"></p> 
+              <div data-bind="visible: email() != ''">
+               <p class="navn" data-bind="text: navn"></p> <p class="email" data-bind="text: '(' + email()+')'"></p> 
               </div>
              
          </td> 

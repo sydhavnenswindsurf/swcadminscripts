@@ -102,7 +102,7 @@ function getHyldeDataValues(){
       });
    
 }
-function addHylde(hyldenr,email,stamdata){
+function addHylde(hyldenr,email,stamdata:Object[][]){
   //get medlemsnummer
   var medlemsNummer = medlemmer_common.getMedlemsNummmer(email,stamdata);
   if(medlemsNummer===-1){
@@ -118,6 +118,16 @@ function addHylde(hyldenr,email,stamdata){
   //add member
   var hyldeSheet = getHyldeSheet();
   hyldeSheet.getRange(rowId,HYLDE_MEDLEMSNUMMER_COLUMN).setValue(medlemsNummer);
+
+  const medlemsData = stamdata.filter(row => row[0]===medlemsNummer);
+  const firstName = medlemsData[0][1] || "";
+    const lastName = medlemsData[0][2] || "";
+    addHyldeLogEvent({
+        hyldenr: hyldenr,
+        handling: "tilføjet",
+        navn: firstName + " " + lastName,
+        medlemsNummer: medlemsNummer
+    });
 }
 
 //test

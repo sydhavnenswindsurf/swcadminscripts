@@ -98,6 +98,15 @@ function addHylde(hyldenr, email, stamdata) {
     //add member
     var hyldeSheet = getHyldeSheet();
     hyldeSheet.getRange(rowId, HYLDE_MEDLEMSNUMMER_COLUMN).setValue(medlemsNummer);
+    var medlemsData = stamdata.filter(function (row) { return row[0] === medlemsNummer; });
+    var firstName = medlemsData[0][1] || "";
+    var lastName = medlemsData[0][2] || "";
+    addHyldeLogEvent({
+        hyldenr: hyldenr,
+        handling: "tilføjet",
+        navn: firstName + " " + lastName,
+        medlemsNummer: medlemsNummer
+    });
 }
 //test
 function test2() {

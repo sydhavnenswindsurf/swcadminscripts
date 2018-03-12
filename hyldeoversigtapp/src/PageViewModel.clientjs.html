@@ -24,7 +24,7 @@ var Hyldeoversigt;
                             item.log = ko.computed(function () {
                                 return _(_this.hyldeLog())
                                     .filter(function (log) { return log.hyldenr === item.hyldenr; })
-                                    .orderBy("dateObject", "desc")
+                                    .orderBy(function (item) { return new Date(item.datetime); }, "desc")
                                     .value();
                             });
                             return item;
@@ -48,6 +48,7 @@ var Hyldeoversigt;
                 _this.hylder(result.map(function (item) {
                     item.newOwner = ko.observable("");
                     item.navn = ko.observable(item.navn);
+                    item.email = ko.observable(item.email);
                     return item;
                 }));
             };
@@ -56,15 +57,16 @@ var Hyldeoversigt;
                     return;
                 }
                 _this.isCallingServer(true);
-                var dataToSend = ko.mapping.toJS(hyldeInfo);
-                console.log(dataToSend);
+                var hyldeItem = ko.mapping.toJS(hyldeInfo);
+                console.log(hyldeItem);
                 callGoogleApi(function (result) {
                     _this.updateHylder(result);
                     _this.isCallingServer(false);
+                    _this.loadHyldeLog();
                 }, function (message) {
                     _this.isCallingServer(false);
                     alert(message);
-                }).remove(dataToSend);
+                }).remove(hyldeItem);
             };
             this.add = function (hyldeInfo) {
                 if (hyldeInfo.newOwner() === '') {
@@ -75,7 +77,9 @@ var Hyldeoversigt;
                 callGoogleApi(function (result) {
                     console.log(result);
                     hyldeInfo.navn(result.newlyAddedNavn);
+                    hyldeInfo.email(hyldeInfo.newOwner());
                     _this.isCallingServer(false);
+                    _this.loadHyldeLog();
                 }, function (message) {
                     console.log(message);
                     _this.isCallingServer(false);
@@ -103,7 +107,7 @@ var Hyldeoversigt;
                     _this.hyldeLog(result.map(function (item) {
                         // add date information client side (gapps serverside doesnt like Date object)
                         var dateObject = new Date(item.datetime);
-                        return __assign({}, item, { dateObject: dateObject, dato: dateObject.toLocaleDateString() });
+                        return __assign({}, item, { dato: dateObject.toLocaleDateString() });
                     }));
                 }, function (error) {
                     console.log(error);

@@ -12,9 +12,6 @@ function doGet() {
 function getHyldeLog (){
   return hyldercommon
   .getHyldeLog()
-  // .filter(function(row){
-  //   return row[0] === hyldeNummer;
-  // })
   .map(function(row){
     return {
       hyldenr: row[0],

@@ -15,8 +15,9 @@ namespace Hyldeoversigt{
             navn:string;
             medlemsnummer:number;
             dato:string; 
-            dateObject:Date;           
+            datetime:string;
          }[]> = ko.observable([]);
+
          private groupedHylder = ko.computed(()=>{
             var result= [];
             _.forOwn(_.groupBy(this.hylder(),"container"), (value, key) =>{
@@ -27,7 +28,7 @@ namespace Hyldeoversigt{
                         item.log= ko.computed(()=>{
                             return _(this.hyldeLog())
                             .filter(log=>log.hyldenr === item.hyldenr)
-                            .orderBy("dateObject","desc")
+                            .orderBy(item=>new Date(item.datetime),"desc")
                             .value()
                         });
                         return item;
@@ -56,6 +57,7 @@ namespace Hyldeoversigt{
              {
                 item.newOwner = ko.observable("");
                 item.navn = ko.observable(item.navn);
+                item.email = ko.observable(item.email);
                 return item;
              }));
          }
@@ -64,19 +66,20 @@ namespace Hyldeoversigt{
                   return;
               }
               this.isCallingServer(true);
-              var dataToSend=ko.mapping.toJS(hyldeInfo);
-              console.log(dataToSend);
+
+              const hyldeItem = ko.mapping.toJS(hyldeInfo);
+              console.log(hyldeItem);
               callGoogleApi((result)=>{         
               
                   this.updateHylder(result);
                   this.isCallingServer(false);
-              
+                  this.loadHyldeLog();
               }, (message)=>{
               
                 this.isCallingServer(false);
                 alert(message);
                 
-              }).remove(dataToSend);
+              }).remove(hyldeItem);
          }
          add = (hyldeInfo)=>{
               if(hyldeInfo.newOwner()===''){
@@ -89,8 +92,9 @@ namespace Hyldeoversigt{
               
                   console.log(result);
                   hyldeInfo.navn(result.newlyAddedNavn);
+                  hyldeInfo.email(hyldeInfo.newOwner());
                   this.isCallingServer(false);
-                  
+                  this.loadHyldeLog();
               },(message)=>{
                 console.log(message);
                 this.isCallingServer(false);
@@ -139,7 +143,6 @@ namespace Hyldeoversigt{
                     const dateObject= new Date(item.datetime);
                     return {
                         ...item, 
-                        dateObject, 
                         dato:dateObject.toLocaleDateString()
                     };
                 }));
