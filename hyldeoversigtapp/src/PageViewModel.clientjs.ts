@@ -107,14 +107,20 @@ function PageViewModel(){
             datetime:string; 
         }[])=>{          
             hyldeItem.loadingLog(false);
-            hyldeItem.log(result.map(event=>{
-                return {
-                    handling:event.handling,
-                    navn:event.navn,
-                    medlemsnummer:event.medlemsnummer,
-                    dato:event.datetime,
-                };
-            }));
+            hyldeItem.log(
+                _(result)
+                .map(item=>{
+                    const dateObject= new Date(item.datetime);
+                    return {
+                        ...item, 
+                        dateObject, 
+                        dato:dateObject.toLocaleDateString()
+                    };
+                })
+                .orderBy("dateObject","desc")
+                .value()
+              
+            );
         },(message)=>{
             hyldeItem.loadingLog(false);
             console.log(message);     

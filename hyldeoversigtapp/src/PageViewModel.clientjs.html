@@ -1,4 +1,12 @@
 <script type="text/javascript"> 
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 function PageViewModel() {
     var self = this;
     this.hylder = ko.observableArray([]);
@@ -78,14 +86,13 @@ function PageViewModel() {
         console.log(hyldeItem.hyldenr);
         callGoogleApi(function (result) {
             hyldeItem.loadingLog(false);
-            hyldeItem.log(result.map(function (event) {
-                return {
-                    handling: event.handling,
-                    navn: event.navn,
-                    medlemsnummer: event.medlemsnummer,
-                    dato: event.datetime,
-                };
-            }));
+            hyldeItem.log(_(result)
+                .map(function (item) {
+                var dateObject = new Date(item.datetime);
+                return __assign({}, item, { dateObject: dateObject, dato: dateObject.toLocaleDateString() });
+            })
+                .orderBy("dateObject", "desc")
+                .value());
         }, function (message) {
             hyldeItem.loadingLog(false);
             console.log(message);
