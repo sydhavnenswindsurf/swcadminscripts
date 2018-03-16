@@ -117,15 +117,6 @@ namespace Hyldeoversigt{
                 dato;            
              }[]>;
          })=>{
-             var isShowingAlready = hyldeItem.showLog();
-            // hide all others
-           this.closeAnyLogs();
-            // toggle current
-             if(isShowingAlready)
-             {
-                 // we just hid it and it was showing so we return...
-                 return;
-             }
     
             hyldeItem.showLog(true);
             console.log(hyldeItem.hyldenr);
@@ -158,7 +149,7 @@ namespace Hyldeoversigt{
               private logPopupSelector:string, 
               private viewModel: PageViewModel
             ) {
-            $(document).mouseup((e)=> 
+            $(document).on('mouseup touchend', (e)=> 
             {
                 var container = $(logPopupSelector);
             

@@ -91,14 +91,6 @@ var Hyldeoversigt;
                 return _.flatten(_this.groupedHylder().map(function (g) { return g.values; }));
             };
             this.openLog = function (hyldeItem) {
-                var isShowingAlready = hyldeItem.showLog();
-                // hide all others
-                _this.closeAnyLogs();
-                // toggle current
-                if (isShowingAlready) {
-                    // we just hid it and it was showing so we return...
-                    return;
-                }
                 hyldeItem.showLog(true);
                 console.log(hyldeItem.hyldenr);
             };
@@ -125,7 +117,7 @@ var Hyldeoversigt;
             var _this = this;
             this.logPopupSelector = logPopupSelector;
             this.viewModel = viewModel;
-            $(document).mouseup(function (e) {
+            $(document).on('mouseup touchend', function (e) {
                 var container = $(logPopupSelector);
                 // if the target of the click isn't the container nor a descendant of the container
                 if (!container.is(e.target) && container.has(e.target).length === 0) {
