@@ -69,7 +69,7 @@ function getLatestMail(email:string):any{
         .first()
         .value();
         
-    if(latestThread===null) {
+    if(latestThread===undefined || latestThread === null) {
         return {email:email};
     }
     
