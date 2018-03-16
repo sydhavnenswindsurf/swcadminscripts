@@ -1,0 +1,70 @@
+<script type="text/javascript"> 
+  function PageViewModel(){
+      var self = this;
+      this.isCallingServer = ko.observable(false);
+      this.indmeldelser = ko.observableArray([]);
+      
+      
+      self.logMessages = ko.observableArray(["Vælg en handling"]);
+      
+      self.feedBack = function(email,result){
+         self.isCallingServer(false);
+         if(result.success){ 
+            $.each(self.indmeldelser().filter(function(item){return item.email==email;}),function(index,item){
+                    item.status(result.newStatus);
+              
+              });
+         }
+         self.logMessages.push(result.message);
+      }
+      
+      self.indmeld = function(email){
+           self.isCallingServer(true);
+           callGoogleApi(function(result) 
+           {
+              
+              self.feedBack(email,result); 
+           }, self.defaultErrorHandler)
+           .indmeld(email);
+      }
+      self.sendVelkomstMail = function(email){
+           self.isCallingServer(true);
+            google.script.run.withSuccessHandler(function(result) { self.feedBack(email,result); })
+             .sendVelkomstMail(email);
+
+      }
+      self.afvis = function(email){
+            self.isCallingServer(true);
+            callGoogleApi(function(result){ self.feedBack(email,result)},self.defaultErrorHandler)
+             .afvis(email);
+
+      }
+      
+      self.defaultErrorHandler = function(message){
+           self.isCallingServer(false);
+           console.log(message);
+           alert(message);
+      }
+      self.sendInviteTestMail = function(){
+         callGoogleApi(function(){self.logMessages.push("sendt test mail")},self.defaultErrorHandler).sendInviteTestMail();
+      }
+      self.sendConfirmationTestMail = function(){
+         callGoogleApi(function(){self.logMessages.push("sendt test mail")},self.defaultErrorHandler).sendConfirmationTestMail();
+      }
+      
+      self.loadIndmeldelser= function(){
+          callGoogleApi(function(result){
+             self.indmeldelser(result.map(function(item){
+                item.status =ko.observable(item.status);
+                return item;
+             }));
+          },self.defaultErrorHandler).getUbehandledeIndmeldelser();
+      
+      }
+      
+      self.loadIndmeldelser();
+  }
+</script>
+  
+
+

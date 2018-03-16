@@ -124,14 +124,18 @@ function afvis(email: any): any{
 
  }
 function sendVelkomstMail(email: any): any {
-   var data = _getSheetData().getValues().filter((item) => { return item[COLUMN_EMAIL] === email; });
-    if (data.length < 1) {
+   const sheetDataRange = _getSheetData();
+   var allEntriesForEmail = sheetDataRange.getValues().filter((item) => { return item[COLUMN_EMAIL] === email; });
+    if (allEntriesForEmail.length < 1) {
         return buildError("Der kunne ikke findes nogen indmeldelser for e-mailen: " + email, email);
     }
     try {
-        var lastIndex = data.length - 1;
-        doSendInviteMail(data[lastIndex][COLUMN_EMAIL], data[lastIndex][COLUMN_FORNAVN], data[lastIndex][COLUMN_EFTERNAVN]);
+        var lastIndex = allEntriesForEmail.length - 1;
+        doSendInviteMail(allEntriesForEmail[lastIndex][COLUMN_EMAIL], allEntriesForEmail[lastIndex][COLUMN_FORNAVN], allEntriesForEmail[lastIndex][COLUMN_EFTERNAVN]);
         _setNewStatus(email, SENT_STATUS + ' (' + Utilities.formatDate(new Date(), "GMT", "yyyy-MM-dd") + ')');
+
+        _updateTimesSentInvitation(email);
+
         return {
             success: true,
             message: "Sendt invitations mail til " + email,
@@ -142,7 +146,24 @@ function sendVelkomstMail(email: any): any {
         return buildError(e, email);
     }
 }
+function _updateTimesSentInvitation(email:string){
+    var sheet = SpreadsheetApp
+        .openById(NEWMEMBERS_SHEETID)
+        .getSheetByName("Formularsvar 1");
+    // Set antal gange we sendt velkomst mail
 
+    const rowsToUpdate = sheet
+        .getDataRange()
+        .getValues()
+        .map((rowData,rowIndex)=>({rowData, rowIndex}))
+        .filter((item) => { return item.rowData[COLUMN_EMAIL] === email; });
+
+    rowsToUpdate.forEach((row)=>{
+        const existingSentCount = parseInt(row.rowData[1] ? row.rowData[1] as string : "0") || 0;
+        // vi bruger notater kolonnen
+        sheet.getRange(row.rowIndex + 1, 2).setValue(existingSentCount+1); 
+    });
+}
 
 function _setNewStatus(email: any, status: string): any{
 
