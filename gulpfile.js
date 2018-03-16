@@ -7,7 +7,7 @@ var livereload= require('gulp-livereload');
 //configuration
 
 var currentAppToWorkOn  = {
-	appDirectory: 'kontingentrapportapp'
+	appDirectory: 'indmeldelseapp'
 };
 var tsProject = p.typescript.createProject('tsconfig.json');
 

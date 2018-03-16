@@ -132,9 +132,12 @@ function sendVelkomstMail(email: any): any {
     try {
         var lastIndex = allEntriesForEmail.length - 1;
         doSendInviteMail(allEntriesForEmail[lastIndex][COLUMN_EMAIL], allEntriesForEmail[lastIndex][COLUMN_FORNAVN], allEntriesForEmail[lastIndex][COLUMN_EFTERNAVN]);
-        _setNewStatus(email, SENT_STATUS + ' (' + Utilities.formatDate(new Date(), "GMT", "yyyy-MM-dd") + ')');
+       
+        const timesSent = _updateTimesSentInvitation(email);
+        
+        const timesSentInfo = timesSent + ' gang' + (timesSent>1?'e':'');
+        _setNewStatus(email, SENT_STATUS + ' ' + timesSentInfo + ' (' + Utilities.formatDate(new Date(), "GMT", "yyyy-MM-dd") + ')');
 
-        _updateTimesSentInvitation(email);
 
         return {
             success: true,
@@ -146,7 +149,9 @@ function sendVelkomstMail(email: any): any {
         return buildError(e, email);
     }
 }
-function _updateTimesSentInvitation(email:string){
+function _updateTimesSentInvitation(email:string): number{
+
+    var timesSent = 1;
     var sheet = SpreadsheetApp
         .openById(NEWMEMBERS_SHEETID)
         .getSheetByName("Formularsvar 1");
@@ -161,8 +166,12 @@ function _updateTimesSentInvitation(email:string){
     rowsToUpdate.forEach((row)=>{
         const existingSentCount = parseInt(row.rowData[1] ? row.rowData[1] as string : "0") || 0;
         // vi bruger notater kolonnen
-        sheet.getRange(row.rowIndex + 1, 2).setValue(existingSentCount+1); 
+        // we the global value also so we can return it from method
+        // this is a little hacked 
+        timesSent = existingSentCount+1; 
+        sheet.getRange(row.rowIndex + 1, 2).setValue(timesSent); 
     });
+    return timesSent;
 }
 
 function _setNewStatus(email: any, status: string): any{
