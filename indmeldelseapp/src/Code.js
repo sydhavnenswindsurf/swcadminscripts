@@ -58,8 +58,9 @@ function getLatestMail(email) {
         .orderBy(function (t) { return t.getLastMessageDate(); }, "desc")
         .first()
         .value();
-    if (latestThread == null)
+    if (latestThread === undefined || latestThread === null) {
         return { email: email };
+    }
     var latestMesssage = _.chain(latestThread.getMessages())
         .filter(function (mes) { return mes.getFrom().toLowerCase().indexOf(email.toLowerCase()) !== -1; })
         .orderBy(function (mes) { return mes.getDate(); }, "desc")
@@ -106,14 +107,17 @@ function _getSheetData() {
     return data;
 }
 function sendVelkomstMail(email) {
-    var data = _getSheetData().getValues().filter(function (item) { return item[COLUMN_EMAIL] === email; });
-    if (data.length < 1) {
+    var sheetDataRange = _getSheetData();
+    var allEntriesForEmail = sheetDataRange.getValues().filter(function (item) { return item[COLUMN_EMAIL] === email; });
+    if (allEntriesForEmail.length < 1) {
         return buildError("Der kunne ikke findes nogen indmeldelser for e-mailen: " + email, email);
     }
     try {
-        var lastIndex = data.length - 1;
-        doSendInviteMail(data[lastIndex][COLUMN_EMAIL], data[lastIndex][COLUMN_FORNAVN], data[lastIndex][COLUMN_EFTERNAVN]);
-        _setNewStatus(email, SENT_STATUS + ' (' + Utilities.formatDate(new Date(), "GMT", "yyyy-MM-dd") + ')');
+        var lastIndex = allEntriesForEmail.length - 1;
+        doSendInviteMail(allEntriesForEmail[lastIndex][COLUMN_EMAIL], allEntriesForEmail[lastIndex][COLUMN_FORNAVN], allEntriesForEmail[lastIndex][COLUMN_EFTERNAVN]);
+        var timesSent = _updateTimesSentInvitation(email);
+        var timesSentInfo = timesSent + ' gang' + (timesSent > 1 ? 'e' : '');
+        _setNewStatus(email, SENT_STATUS + ' ' + timesSentInfo + ' (' + Utilities.formatDate(new Date(), "GMT", "yyyy-MM-dd") + ')');
         return {
             success: true,
             message: "Sendt invitations mail til " + email,
@@ -123,6 +127,27 @@ function sendVelkomstMail(email) {
     catch (e) {
         return buildError(e, email);
     }
+}
+function _updateTimesSentInvitation(email) {
+    var timesSent = 1;
+    var sheet = SpreadsheetApp
+        .openById(NEWMEMBERS_SHEETID)
+        .getSheetByName("Formularsvar 1");
+    // Set antal gange we sendt velkomst mail
+    var rowsToUpdate = sheet
+        .getDataRange()
+        .getValues()
+        .map(function (rowData, rowIndex) { return ({ rowData: rowData, rowIndex: rowIndex }); })
+        .filter(function (item) { return item.rowData[COLUMN_EMAIL] === email; });
+    rowsToUpdate.forEach(function (row) {
+        var existingSentCount = parseInt(row.rowData[1] ? row.rowData[1] : "0") || 0;
+        // vi bruger notater kolonnen
+        // we the global value also so we can return it from method
+        // this is a little hacked 
+        timesSent = existingSentCount + 1;
+        sheet.getRange(row.rowIndex + 1, 2).setValue(timesSent);
+    });
+    return timesSent;
 }
 function _setNewStatus(email, status) {
     var rowIds = _getSheetData()

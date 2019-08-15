@@ -1,4 +1,5 @@
 var HYLDESHEET_ID = UserProperties.getProperty("HylderSheetId");
+var HYLDERLOGSHEET_ID = UserProperties.getProperty("HylderLogSheetId");
 var HYLDESHEET_NAME = "Hylder";
 var HYLDE_CONTAINER_COLUMN = 1;
 var HYLDE_HYLDENR_COLUMN = 2;
@@ -9,9 +10,39 @@ var RESERVERETHYLDER_ID = UserProperties.getProperty("ReserveretHylderSheetId");
 var RESERVERETHYLDER_SHEET = "reservationer";
 var RESERVERT_EMAIL_COLUMNINDEX = 1;
 var RESERVERT_HYLDENR_COLUMNINDEX = 0;
+function getHyldeLog() {
+    var hyldeLog = SpreadsheetApp.openById(HYLDERLOGSHEET_ID)
+        .getSheetByName("log");
+    return hyldeLog
+        .getRange(2, 1, hyldeLog.getLastRow(), 5)
+        .getValues()
+        .filter(function (row) {
+        return row[0] ? true : false; // filter out any empty rows
+    })
+        .map(function (row) {
+        row[4] = swcadmin_common.convertToStringsDate(row[4]); // gapps doesnt handle date objects client side
+        return row;
+    });
+}
+function test_addHyldeLogEvent() {
+    addHyldeLogEvent({
+        hyldenr: "test1",
+        handling: "tilføjet",
+        navn: "krøllebølle",
+        medlemsNummer: 9999999
+    });
+}
+function addHyldeLogEvent(logEvent) {
+    var hyldeLog = SpreadsheetApp.openById(HYLDERLOGSHEET_ID)
+        .getSheetByName("log");
+    var hylde = hyldeLog
+        .appendRow([logEvent.hyldenr, logEvent.handling, logEvent.medlemsNummer, logEvent.navn, new Date()]);
+    // .getRange(hyldeLog.getLastRow() + 1,1,1,5)
+    // .setValues([[logEvent.hyldenr, logEvent.handling, logEvent.medlemsNummer, logEvent.navn, new Date()]]);  
+}
 function getReservedHylderInfo() {
     return getReservedHylderData()
-        .filter(function (row) { return row[RESERVERT_EMAIL_COLUMNINDEX] != ''; })
+        .filter(function (row) { return row[RESERVERT_EMAIL_COLUMNINDEX] !== ''; })
         .map(function (row) {
         return {
             email: row[RESERVERT_EMAIL_COLUMNINDEX],
@@ -50,13 +81,13 @@ function getHyldeDataValues() {
         .getRange(2, 1, lastRow, 5)
         .getValues()
         .filter(function (row) {
-        return row[1] != '';
+        return row[1] !== '';
     });
 }
 function addHylde(hyldenr, email, stamdata) {
     //get medlemsnummer
     var medlemsNummer = medlemmer_common.getMedlemsNummmer(email, stamdata);
-    if (medlemsNummer == -1) {
+    if (medlemsNummer === -1) {
         throw "kunne ikke finde medlemsnummer";
     }
     //Get hylde row
@@ -67,6 +98,15 @@ function addHylde(hyldenr, email, stamdata) {
     //add member
     var hyldeSheet = getHyldeSheet();
     hyldeSheet.getRange(rowId, HYLDE_MEDLEMSNUMMER_COLUMN).setValue(medlemsNummer);
+    var medlemsData = stamdata.filter(function (row) { return row[0] === medlemsNummer; });
+    var firstName = medlemsData[0][1] || "";
+    var lastName = medlemsData[0][2] || "";
+    addHyldeLogEvent({
+        hyldenr: hyldenr,
+        handling: "tilføjet",
+        navn: firstName + " " + lastName,
+        medlemsNummer: medlemsNummer
+    });
 }
 //test
 function test2() {

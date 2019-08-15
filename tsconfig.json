@@ -10,5 +10,9 @@
     "exclude": [
         "node_modules",
         "typings"
+    ],
+    "typeRoots": [
+      "node_modules/@types",
+      "custom_typings"
     ]
 }

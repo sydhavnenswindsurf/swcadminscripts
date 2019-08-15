@@ -8,7 +8,11 @@
             "task": "watch",
             "problemMatcher": [
                 "$tsc-watch"
-            ]
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         },
         {
             "type": "gulp",
@@ -17,11 +21,28 @@
         {
             "type": "gulp",
             "task": "sync-currentApp",
-            "problemMatcher": [],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+            "problemMatcher": []
+        },
+        {
+            "type": "npm",
+            "script": "restore",
+            "problemMatcher": [
+                "$tsc-watch"
+            ],
+            "isBackground": true
+        },
+        {
+            "type": "typescript",
+            "tsconfig": "tsconfig.json",
+            "option": "watch",
+            "problemMatcher": [
+                "$tsc-watch"
+            ]
+        },
+        {
+            "type": "npm",
+            "script": "gapps-auth",
+            "problemMatcher": []
         }
     ]
 }

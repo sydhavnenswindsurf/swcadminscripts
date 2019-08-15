@@ -12,6 +12,7 @@ var HYLDEINVITE_TEMPLATE_ID = "1Kgo7WGLOQkm_hscTNjLb7ucovmCqE1wy0QHADO_Nw_Y";
 var HYLDECONFIRM_TEMPLATE_ID = "1hZ62lKRZi7e8uu55Isq32SlxKgJfuzxyburQel_ndvE";
 var TOTAL_NUMBER_COLUMNS = 9;
 var DONE_STATUS = ["Tildelt", "Fortrudt", "Fjernet"];
+// @ts-ignore
 function doGet() {
     var html = HtmlService.createTemplateFromFile('main');
     return html.evaluate()
@@ -25,7 +26,7 @@ function loadLedigeHylder() {
     var hyldeIndex = 1;
     var medlemNummerIndex = 2;
     var result = values
-        .filter(function (row) { return row[medlemNummerIndex] == ""; })
+        .filter(function (row) { return row[medlemNummerIndex] === ""; })
         .map(function (row) {
         return {
             container: row[containerIndex],
@@ -33,7 +34,7 @@ function loadLedigeHylder() {
         };
     })
         .filter(function (outer) {
-        return swcadmin_common.getIndexOf(resHylder, function (inner) { return inner.hyldenr == outer.hyldenr; }) == -1;
+        return swcadmin_common.getIndexOf(resHylder, function (inner) { return inner.hyldenr === outer.hyldenr; }) === -1;
     });
     return {
         ledigeHylder: result,
@@ -48,8 +49,8 @@ function loadVenteliste() {
     var values = sheet.getRange(2, 1, sheet.getLastRow(), TOTAL_NUMBER_COLUMNS).getValues();
     var result = values
         .filter(function (row) {
-        return DONE_STATUS.indexOf(row[STATUS_COL - 1]) == -1
-            && row[EMAIL_COL - 1] != "";
+        return DONE_STATUS.indexOf(row[STATUS_COL - 1]) === -1
+            && row[EMAIL_COL - 1] !== "";
     })
         .map(function (row) {
         return {
@@ -139,6 +140,7 @@ function removeFromList(email) {
     setStatus(email, "Fjernet");
     return { success: true };
 }
+// @ts-ignore
 function include(filename) {
     return HtmlService.createHtmlOutputFromFile(filename)
         .getContent();

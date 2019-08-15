@@ -9,6 +9,19 @@ function doGet() {
   .setSandboxMode(HtmlService.SandboxMode.IFRAME);
 }
 
+function getHyldeLog (){
+  return hyldercommon
+  .getHyldeLog()
+  .map(function(row){
+    return {
+      hyldenr: row[0],
+      handling: row[1],
+      medlemsnummer:row[2],
+      navn: row[3],
+      datetime:row[4]
+    }
+  });
+}
 
 function loadHylder(){
   
@@ -31,6 +44,13 @@ function remove(info){
   var sheet = hyldercommon.getHyldeSheet();
   sheet.getRange(rowId,hyldercommon.HYLDE_MEDLEMSNUMMER_COLUMN).setValue('');
   
+  hyldercommon.addHyldeLogEvent({
+    hyldenr: info.hyldenr,
+    handling:"fjernet",
+    navn:info.navn,
+    medlemsNummer:info.medlemsnummer
+  });
+
   return loadHylder();
 }
 

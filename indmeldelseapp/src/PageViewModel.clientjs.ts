@@ -125,7 +125,7 @@ namespace IndmeldelseApp {
             $(tableSelector).on('mouseenter',lastCellSelector, function () {
                 var $currentCell = $(this);
                 var message = $currentCell.children(messageWithContentSelector);
-                if (message.length == 0)
+                if (message.length === 0)
                     return;
                 //Calculate placement
                 message.css("top","-" + (message.height()/4)+"px")

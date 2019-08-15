@@ -1,3 +1,4 @@
+
 var MAILFOLDER ="SWC Admin/Ledig hylde";
 var HYLDE_VENTELISTE_SHEET_ID= PropertiesService.getScriptProperties().getProperty("HyldeVentelisteSheetId"); 
 var HYLDE_VENTELISTE_SHEET_NAME="Formularsvar 1";
@@ -16,7 +17,7 @@ var TOTAL_NUMBER_COLUMNS = 9;
 
 var DONE_STATUS =["Tildelt","Fortrudt","Fjernet"];
 
-
+// @ts-ignore
 function doGet() {
       
   var html= HtmlService.createTemplateFromFile('main');
@@ -36,13 +37,13 @@ function loadLedigeHylder(){
   var medlemNummerIndex=2;
   
   var result =values
-       .filter(function(row){return row[medlemNummerIndex] == ""})
+       .filter(function(row){return row[medlemNummerIndex] === ""})
   .map(function(row){return {
     container:row[containerIndex], 
     hyldenr:row[hyldeIndex]
   }})
   .filter(function(outer){
-    return swcadmin_common.getIndexOf(resHylder, function(inner){return inner.hyldenr == outer.hyldenr })==-1;
+    return swcadmin_common.getIndexOf(resHylder, function(inner){return inner.hyldenr === outer.hyldenr })===-1;
   });
   
   
@@ -63,8 +64,8 @@ function loadVenteliste(){
   var values= sheet.getRange(2, 1, sheet.getLastRow(), TOTAL_NUMBER_COLUMNS).getValues();
   var result = values
   .filter(function(row){
-      return DONE_STATUS.indexOf(row[STATUS_COL-1] as string) ==-1
-      && row[EMAIL_COL-1] !="";
+      return DONE_STATUS.indexOf(row[STATUS_COL-1] as string) ===-1
+      && row[EMAIL_COL-1] !=="";
   })
   .map(function(row){
     return { 
@@ -182,7 +183,7 @@ function removeFromList(email){
   return {success:true}
 }
 
-
+// @ts-ignore
 function include(filename) {
   return HtmlService.createHtmlOutputFromFile(filename)
       .getContent();

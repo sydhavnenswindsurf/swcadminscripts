@@ -4,6 +4,8 @@
   <meta name="viewport" content="width=device-width">
     <base target="_top">
     <?!=swcadmin_common.includeSwcAdminExternalJsLibs();?>
+    <?!= swcadmin_common.includeCommonMethods();?>
+    <?!= swcadmin_common.includeCommonStyling();?>
   </head>
   <body>
   <h3><a href="https://docs.google.com/spreadsheets/d/1Vcy0CizohZHLfCQuxU39J0nDix_kZ15oJVaX5IPMc24/pubhtml" target="_blank">Visuel hyldeoversigt</a> </h3>
@@ -23,16 +25,40 @@
          <td data-bind="text: container"></td>
          <td>
               <input placeholder="Indtast e-mail adresse" class="new-owner" type="text" data-bind="visible: navn()=='', value:newOwner">
-              <div data-bind="visible: email != ''">
-               <p class="navn" data-bind="text: navn"></p> <p class="email" data-bind="text: '(' + email+')'"></p> 
+              <div data-bind="visible: email() != ''">
+               <p class="navn" data-bind="text: navn"></p> <p class="email" data-bind="text: '(' + email()+')'"></p> 
               </div>
              
          </td> 
          <td> 
              <button class="add" data-bind="enable: !$root.isCallingServer(),visible: navn()=='', click:function(){$root.add($data);}">Tilføj</button>
              <button class="remove" data-bind="enable: !$root.isCallingServer(),visible: navn()!='', click:function (){$root.remove($data);}">Fjern</button>
-             </td>
-             
+             <div class="log-panel">
+                <button class="log" data-bind="click: function(){$root.openLog($data)}, visible: log() && log().length>0">Log</button>
+                <div class="log-popup popup" data-bind="css:{hidden: !showLog()}">
+                    <div class="no-results" data-bind="visible: !log() || log().length ===0" >Der er ikke nogen log information for hylden</div>
+                    <div class="results" data-bind="visible: log() && log().length>0">
+                      <h4>Historik for hylde <span data-bind="text: $data.hyldenr"></span></h4>
+                      <table>
+                        <thead>
+                          <th>Handling</th>
+                          <th>Navn</th>
+                          <th>Dato</th>
+                          <th>Medlemsnr.</th>
+                        </thead>
+                        <tbody data-bind="foreach: log()">
+                            <tr class="row">
+                              <td data-bind="text: $data.handling"></td>
+                              <td data-bind="text: $data.navn"></td>
+                              <td data-bind="text: $data.dato"></td>
+                              <td data-bind="text: $data.medlemsnummer"></td>
+                            </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                </div>
+             </div> 
+             </td>            
          </tr>
       </table>
    </div>
@@ -41,10 +67,12 @@
      
    </section>
    <?!= include('style'); ?>
-  <?!= include('PageViewModel'); ?>
+  <?!= include('PageViewModel.clientjs'); ?>
   <script>
   $(function(){
-       ko.applyBindings(new PageViewModel());
+    const vm = new Hyldeoversigt.PageViewModel();
+    new Hyldeoversigt.GuiEnhancments(".log-popup",vm);
+    ko.applyBindings(vm);
   });
   </script>
   </body>

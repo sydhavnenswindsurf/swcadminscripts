@@ -41,10 +41,37 @@ float:right;
  float:left;
  margin:2px;
  min-height:1320px;
- min-width: 250px;
+ min-width: 300px;
  width: 27%;
 }
 .container h2{
  margin:5px;
+}
+
+.log-panel{
+    display: inline-block;
+    position: relative;
+}
+.log-panel .log-popup{    
+    position:absolute;
+    top:21px;
+    left:0px;
+    width:32vw;
+    white-space:normal;
+    padding:3px;
+}
+
+.log-panel .log-popup h4{    
+   margin:1px;
+   border-bottom:1px solid grey;
+}
+.log-panel .log-popup table th{    
+    text-align:left;
+}
+.log-panel .log-popup table td{    
+    padding-right:5px;
+}
+.log-panel .log-popup.hidden{    
+    display:none;
 }
 </style>
