@@ -59,7 +59,6 @@ gulp.task('sync-currentApp', defaultTaskSpec, function(){
 		stderr: true, // default = true, false means don't write stderr 
 		stdout: true // default = true, false means don't write stdout 
 	  }
-	//process.chdir('FacebookAdminApp');
 	return gulp.src(currentAppToWorkOn.appDirectory)
 	.pipe(p.exec('cd ' + currentAppToWorkOn.appDirectory +' && gapps push'))
 	.on('end',function(){ p.util.log("Pushed "+currentAppToWorkOn.appDirectory+" to google drive...")})
