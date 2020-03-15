@@ -4,11 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "chokidar webpack.config.js testclasp/**/*.* -i testclasp/dist/**/*.* -t 500 -c \"npm-run-all --parallel --print-label build typecheck && cd testclasp && npx clasp push\" --initial",
+    "build": "webpack --env.project=testclasp",
+    "typecheck": "tsc -p testclasp",
     "test": "test",
     "restore": "npm install --no-save",
     "watch": "gulp --watch",
     "default": "gulp --watch",
-    "gapps-auth":"%SystemRoot%/system32/WindowsPowerShell/v1.0/powershell.exe -NoExit .\\authorize-gapps.ps1"
+    "gapps-auth": "%SystemRoot%/system32/WindowsPowerShell/v1.0/powershell.exe -NoExit .\\authorize-gapps.ps1"
   },
   "repository": {
     "type": "git",
@@ -21,14 +24,27 @@
   },
   "homepage": "https://github.com/sydhavnenswindsurf/swcadminscripts#readme",
   "devDependencies": {
+    "@babel/core": "^7.8.7",
+    "@babel/preset-env": "^7.8.7",
+    "@babel/preset-react": "^7.8.3",
+    "@babel/preset-typescript": "^7.8.3",
+    "@google/clasp": "^2.3.0",
     "@types/google-apps-script": "0.0.21",
     "@types/gulp-typescript": "^2.13.0",
-    "@types/jquery": "^3.3.1",
+    "@types/jquery": "^3.3.33",
     "@types/knockout": "^3.4.52",
     "@types/knockout.mapping": "^2.0.33",
     "@types/lodash": "^4.14.104",
-    "@types/node": "^9.4.7",
+    "@types/node": "^13.9.1",
+    "@types/react-dom": "^16.9.5",
+    "babel-loader": "^8.0.6",
+    "chokidar": "^3.3.1",
+    "chokidar-cli": "^2.1.0",
+    "clean-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^5.1.1",
+    "css-loader": "^3.4.2",
     "del": "^2.2.2",
+    "fork-ts-checker-webpack-plugin": "^4.1.0",
     "fs": "0.0.1-security",
     "gulp": "^3.9.1",
     "gulp-cached": "^1.1.0",
@@ -41,10 +57,20 @@
     "gulp-sourcemaps": "^2.1.1",
     "gulp-typescript": "^3.0.2",
     "gulp-util": "^3.0.8",
+    "html-webpack-inline-source-plugin": "0.0.10",
+    "html-webpack-plugin": "^3.2.0",
     "node-google-apps-script": "^1.1.5",
-    "typescript": "^2.4.1",
-    "typings": "^2.1.1",
-    "vinyl-paths": "^2.1.0"
+    "npm-run-all": "^4.1.5",
+    "style-loader": "^1.1.3",
+    "typescript": "^3.8.3",
+    "vinyl-paths": "^2.1.0",
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@material-ui/core": "^4.9.5",
+    "@material-ui/icons": "^4.9.1",
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0"
+  }
 }

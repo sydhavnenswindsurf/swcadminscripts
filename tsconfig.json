@@ -1,18 +1,13 @@
 {
-   "compilerOptions": {
-        "target": "es5",
-        "module": "esnext",
-        
-        "sourceMap": false,
-        "jsx": "preserve",
-        "noImplicitReturns": true        
-    }, 
-    "exclude": [
-        "node_modules",
-        "typings"
-    ],
-    "typeRoots": [
-      "node_modules/@types",
-      "custom_typings"
-    ]
+  "compilerOptions": {
+    "target": "esnext",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "jsx": "react",
+    "noEmit": true,
+    "strict": false,
+    "isolatedModules": false,
+    "esModuleInterop": true
+  },
+  "exclude": ["node_modules"]
 }

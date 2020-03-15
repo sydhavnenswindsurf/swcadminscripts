@@ -1,48 +1,47 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "type": "gulp",
-            "task": "watch",
-            "problemMatcher": [
-                "$tsc-watch"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
-        },
-        {
-            "type": "gulp",
-            "task": "default"
-        },
-        {
-            "type": "gulp",
-            "task": "sync-currentApp",
-            "problemMatcher": []
-        },
-        {
-            "type": "npm",
-            "script": "restore",
-            "problemMatcher": [
-                "$tsc-watch"
-            ],
-            "isBackground": true
-        },
-        {
-            "type": "typescript",
-            "tsconfig": "tsconfig.json",
-            "option": "watch",
-            "problemMatcher": [
-                "$tsc-watch"
-            ]
-        },
-        {
-            "type": "npm",
-            "script": "gapps-auth",
-            "problemMatcher": []
-        }
-    ]
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "gulp",
+      "task": "watch",
+      "problemMatcher": ["$tsc-watch"],
+      "group": "build"
+    },
+    {
+      "type": "gulp",
+      "task": "default"
+    },
+    {
+      "type": "gulp",
+      "task": "sync-currentApp",
+      "problemMatcher": []
+    },
+    {
+      "type": "npm",
+      "script": "restore",
+      "problemMatcher": ["$tsc-watch"],
+      "isBackground": true
+    },
+    {
+      "type": "typescript",
+      "tsconfig": "tsconfig.json",
+      "option": "watch",
+      "problemMatcher": ["$tsc-watch"]
+    },
+    {
+      "type": "npm",
+      "script": "gapps-auth",
+      "problemMatcher": []
+    },
+    {
+      "type": "npm",
+      "script": "start",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
 }
