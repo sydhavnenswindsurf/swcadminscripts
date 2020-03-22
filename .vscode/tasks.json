@@ -37,7 +37,7 @@
     },
     {
       "type": "npm",
-      "script": "start",
+      "script": "start:udmeldelsersapp",
       "group": {
         "kind": "build",
         "isDefault": true

@@ -30,12 +30,7 @@ module.exports = env => {
         }
       ]
     },
-    plugins: [
-      //   new ForkTsCheckerWebpackPlugin({
-      //     tsconfig: path.resolve(__dirname, "./tsconfig.json"),
-      //     checkSyntacticErrors: true
-      //   })
-    ]
+    plugins: []
   };
 
   const serverConfig = {
@@ -48,7 +43,7 @@ module.exports = env => {
       library: "ServerLib"
     },
     plugins: [
-      ...sharedConfig.plugins,
+      ...(sharedConfig.plugins || []),
       new CleanWebpackPlugin(),
       new CopyPlugin([{ from: "./src/server/server.js" }])
     ]
@@ -60,7 +55,7 @@ module.exports = env => {
       clientApp: "./src/client/clientApp"
     },
     plugins: [
-      ...sharedConfig.plugins,
+      ...(sharedConfig.plugins || []),
       new HtmlWebpackPlugin({
         template: "./src/client/index.html",
         title: project,
