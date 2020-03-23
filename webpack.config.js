@@ -4,13 +4,15 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const HtmlWebpackInlineSourcePlugin = require("html-webpack-inline-source-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+const webpack = require("webpack");
+
 module.exports = env => {
   const { project, NODE_ENV } = env || {};
 
   if (!project) throw Error("no project environment variable set.");
 
   const sharedConfig = {
-    mode: NODE_ENV || "production",
+    mode: NODE_ENV || "development",
     context: path.resolve(__dirname, project),
     output: {
       filename: "[name].js",
@@ -48,6 +50,7 @@ module.exports = env => {
       new CopyPlugin([{ from: "./src/server/server.js" }])
     ]
   };
+  console.log("hello first");
 
   const clientConfig = {
     ...sharedConfig,
@@ -56,6 +59,16 @@ module.exports = env => {
     },
     plugins: [
       ...(sharedConfig.plugins || []),
+      // new webpack.NormalModuleReplacementPlugin(/(\.*)\/api\/(\.*)/, function(
+      //   resource
+      // ) {
+      //   console.log("hellloooo");
+      //   resource.request = resource.request.replace(/api/, `/apiMock/`);
+      // }),
+      new webpack.NormalModuleReplacementPlugin(
+        /\.shared\\api\.ts/,
+        `..\\${project}\\src\\client\\apiMock.ts`
+      ),
       new HtmlWebpackPlugin({
         template: "./src/client/index.html",
         title: project,
