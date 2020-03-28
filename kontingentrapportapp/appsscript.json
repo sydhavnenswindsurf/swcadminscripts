@@ -1,0 +1,27 @@
+{
+  "timeZone": "Europe/Paris",
+  "dependencies": {
+    "libraries": [{
+      "userSymbol": "hylder_common",
+      "libraryId": "1Z_V8x6u4ctGsVkS_lsvLB0j4U-taEZGP-chaJtmvSETJ2jfG21_0NKCD",
+      "version": "3"
+    }, {
+      "userSymbol": "swcadmin_common",
+      "libraryId": "18nrPokmVGxiSdrGrt8yLQBxFTlyjGfQi-ESNwSTPRotRMObSOjfzyxFo",
+      "version": "4"
+    }, {
+      "userSymbol": "medlemmer_common",
+      "libraryId": "19pJrTV_5DlUhD85gQy7h4bNOTJjzLjF7Ar1lq6IqlqznmlpiDWTqQMV2",
+      "version": "2"
+    }, {
+      "userSymbol": "LodashGS",
+      "libraryId": "1SQ0PlSMwndIuOAgtVJdjxsuXueECtY9OGejVDS37ckSVbMll73EXf2PW",
+      "version": "2"
+    }]
+  },
+  "webapp": {
+    "access": "MYSELF",
+    "executeAs": "USER_ACCESSING"
+  },
+  "exceptionLogging": "STACKDRIVER"
+}
