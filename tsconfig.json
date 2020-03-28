@@ -14,6 +14,5 @@
       "./swcadmincommon"
     ]
   },
-  "exclude": ["node_modules"],
-  "include": ["./medlemmercommon", "./swcadmincommon"]
+  "exclude": ["node_modules"]
 }
