@@ -1,7 +1,7 @@
 import { getIndexOf } from "../../../.shared/utilities";
 import { EmailInfo, UdmeldtResult } from "./types";
 
-const udmeldelserLabelKey = "MAIL_FOLDER_UDMELDELSER";
+const udmeldelserLabel = "SWC Admin/Udmeldelser";
 const medlemmerSheet = PropertiesService.getScriptProperties().getProperty(
   "MedlemmerSheetId"
 );
@@ -31,7 +31,6 @@ export function getUdmeldelserAdresses(label: string): EmailInfo[] {
 }
 export function udmeld(email): UdmeldtResult {
   console.log("calling udmeld", email);
-  email = "lohals@gmail.com";
   var udmeldt = false;
   var notFound = false;
   if (!medlemExists(email)) {
@@ -44,8 +43,8 @@ export function udmeld(email): UdmeldtResult {
     console.log("Moving mail status", email);
     swcadmin_common.moveMail(
       email,
-      getMailLabelName(),
-      getMailLabelName() + "/" + PROCESSEDLABEL
+      udmeldelserLabel,
+      udmeldelserLabel + "/" + PROCESSEDLABEL
     );
     udmeldt = true;
   }
@@ -54,12 +53,6 @@ export function udmeld(email): UdmeldtResult {
     notFound: notFound,
     udmeldt: udmeldt
   };
-}
-function getMailLabelName() {
-  //return "Test/SWC Admin/Udmeldelser";//PropertiesService.getScriptProperties().getProperty(udmeldelserLabelKey);
-  return PropertiesService.getScriptProperties().getProperty(
-    udmeldelserLabelKey
-  );
 }
 function medlemExists(email) {
   var sheet = SpreadsheetApp.openById(medlemmerSheet).getSheetByName(
