@@ -69,7 +69,7 @@ module.exports = env => {
       ...(sharedConfig.plugins || []),
       ...mockedApiPlugins,
       new HtmlWebpackPlugin({
-        template: "./src/client/index.html",
+        template: "../.shared/index.html",
         title: project,
         inlineSource: ".(js|css)$"
       }),

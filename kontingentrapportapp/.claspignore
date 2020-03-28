@@ -1,3 +1,4 @@
 src/**/*.*
 !dist/**/*.*
 dist/**/clientApp.js
+Code.js

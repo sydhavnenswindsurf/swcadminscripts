@@ -6,6 +6,7 @@
   "scripts": {
     "start:udmeldelserapp": "set AppToStart=udmeldelserapp&& npm run start-local",
     "push:udmeldelserapp": "set AppToStart=udmeldelserapp && npm-run-all -l -p build typecheck -s push open-devurl",
+    "push:kontingentrapportapp": "set AppToStart=kontingentrapportapp && npm-run-all -l -p build typecheck -s push open-devurl",
     "start-local": "npm-run-all --parallel -l start \"typecheck --  --watch\"",
     "start": "webpack-dev-server --env.project=%AppToStart% --env.mockApi",
     "open-devurl": "open-cli https://script.google.com/macros/s/AKfycbzZXTxJ32KdEDz6MXtfkA3dMv-o3j8UsbjOKrrOUcI/exec -- firefox",
@@ -38,6 +39,7 @@
     "@types/lodash": "^4.14.104",
     "@types/node": "^13.9.1",
     "@types/react-dom": "^16.9.5",
+    "@types/webpack-dev-server": "^3.10.1",
     "babel-loader": "^8.0.6",
     "chokidar": "^3.3.1",
     "chokidar-cli": "^2.1.0",
@@ -59,6 +61,7 @@
   "dependencies": {
     "@material-ui/core": "^4.9.5",
     "@material-ui/icons": "^4.9.1",
+    "lodash": "^4.17.15",
     "react": "^16.13.0",
     "react-dom": "^16.13.0"
   },
