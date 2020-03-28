@@ -2,56 +2,62 @@ import { UdmeldelserList, UdmeldelserListProps } from "./UdmeldelserList";
 import * as React from "react";
 import Button from "@material-ui/core/Button";
 import { Introduction } from "./Introduction";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useReducer } from "react";
 import { callGoogleApi } from "../../../.shared/api";
-import { EmailInfo } from "../server/types";
+import { EmailInfo, UdmeldtResult } from "../server/types";
+import { AppState, AppReducer } from "./appState";
 
-const startData: UdmeldelserListProps = {
+const startData: AppState = {
+  usersToProcess: [],
+  currentUserBeingUdmeldt: null,
   mailLabel: "SWC Admin/Udmeldelser",
   listOfMails: [],
   udmeldtMessages: [],
   notFoundMessages: [],
-  bulkUdmeld: () => {
-    console.log("udmeld");
-  },
-  isLoading: {
-    currentProcessMessage: "Henter mails om udmeldelser"
-  }
+  errorMessages: [],
+  processingMessage: "Søger i emails efter udmeldelser..."
 };
 
 export const App = () => {
-  const [listOfMails, setListOfMails] = useState<EmailInfo[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [appState, dispatch] = useReducer(AppReducer, startData);
   useEffect(() => {
-    // Create an scoped async function in the hook
-    // (async () => {
-    //   callGoogleApi(
-    //     (emails: EmailInfo[]) => {
-    //       setListOfMails(emails);
-    //     },
-    //     error => console.log(error)
-    //   ).getUdmeldelserAdresses(startData.mailLabel);
-    // })();
     callGoogleApi(
-      (emails: EmailInfo[]) => {
-        setListOfMails(emails);
-        setIsLoading(false);
+      (listOfMails: EmailInfo[]) => {
+        dispatch({ type: "UDMELDELSER_LOADED", listOfMails });
       },
       error => console.log(error)
     ).getUdmeldelserAdresses(startData.mailLabel);
   }, []);
+
+  useEffect(() => {
+    if (appState.currentUserBeingUdmeldt === null) return;
+    callGoogleApi(
+      (result: UdmeldtResult) => {
+        dispatch({ type: "UDMELDRESULT_RECIEVED", result });
+      },
+      error => dispatch({ type: "UDMELDRESULT_RECIEVED", error })
+    ).udmeld(appState.currentUserBeingUdmeldt);
+  }, [appState.currentUserBeingUdmeldt]);
+
+  const bulkUdmeld = () => {
+    dispatch({ type: "BEGIN_UDMELD", email: appState.listOfMails[0].email }); // TODO: use medlemid
+  };
+
+  const { listOfMails, processingMessage, usersToProcess } = appState;
   return (
     <>
       <h1>Masseudmeldelse af medlemmer</h1>
       <Introduction />
       <UdmeldelserList
-        {...startData}
+        {...appState}
         listOfMails={listOfMails}
         isLoading={
-          isLoading && {
-            currentProcessMessage: "Søger i emails efter udmeldelser..."
+          processingMessage && {
+            currentProcessMessage: processingMessage
           }
         }
+        bulkUdmeld={bulkUdmeld}
+        disableUdmeldButton={usersToProcess.length === 0}
       ></UdmeldelserList>
     </>
   );

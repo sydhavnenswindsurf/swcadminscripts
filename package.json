@@ -4,14 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "x": "open-cli https://script.google.com/macros/s/AKfycbzZXTxJ32KdEDz6MXtfkA3dMv-o3j8UsbjOKrrOUcI/exec",
     "start:udmeldelserapp": "set AppToStart=udmeldelserapp&& npm run start-local",
-    "start:testclasp": "set AppToStart=testclasp&& npm run start",
-    "start-local": "chokidar webpack.config.js \"%AppToStart%/**/*.*\" -i \"%AppToStart%/dist/**/*.*\" -t 500 -c \"npm-run-all --parallel --print-label build typecheck\" --initial",
+    "deploy:udmeldelserapp": "set AppToStart=udmeldelserapp && npm-run-all -l -p build typecheck -s deploy open-devurl",
+    "start-devserver": "webpack-dev-server --env.project=%AppToStart% --env.mockApi",
+    "open-devurl": "open-cli https://script.google.com/macros/s/AKfycbzZXTxJ32KdEDz6MXtfkA3dMv-o3j8UsbjOKrrOUcI/exec -- firefox",
+    "start-local": "npm-run-all --parallel -l start-devserver \"typecheck --  --watch\"",
+    "start-localx": "chokidar webpack.config.js \"%AppToStart%/**/*.*\" -i \"%AppToStart%/dist/**/*.*\" -t 500 -c \"npm-run-all --parallel --print-label start-devserver typecheck\" --initial",
     "start": "chokidar webpack.config.js \"%AppToStart%/**/*.*\" -i \"%AppToStart%/dist/**/*.*\" -t 500 -c \"npm-run-all --parallel --print-label build typecheck && cd %AppToStart% && npx clasp push  && open-cli https://script.google.com/macros/s/AKfycbzZXTxJ32KdEDz6MXtfkA3dMv-o3j8UsbjOKrrOUcI/exec -- firefox\" --initial",
     "build": "webpack --env.project=%AppToStart%",
     "typecheck": "tsc -p %AppToStart%",
-    "test": "test",
+    "deploy": "cd %AppToStart% && npx clasp push",
     "restore": "npm install --no-save",
     "watch": "gulp --watch",
     "default": "gulp --watch",
@@ -71,7 +73,8 @@
     "typescript": "^3.8.3",
     "vinyl-paths": "^2.1.0",
     "webpack": "^4.42.0",
-    "webpack-cli": "^3.3.11"
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
     "@material-ui/core": "^4.9.5",

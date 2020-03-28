@@ -7,7 +7,7 @@ const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const webpack = require("webpack");
 
 module.exports = env => {
-  const { project, NODE_ENV } = env || {};
+  const { project, NODE_ENV, mockApi } = env || {};
 
   if (!project) throw Error("no project environment variable set.");
 
@@ -50,7 +50,15 @@ module.exports = env => {
       new CopyPlugin([{ from: "./src/server/server.js" }])
     ]
   };
-  console.log("hello first");
+
+  const mockedApiPlugins = mockApi
+    ? [
+        new webpack.NormalModuleReplacementPlugin(
+          /\.shared\\api\.ts/,
+          `..\\${project}\\src\\client\\apiMock.ts`
+        )
+      ]
+    : [];
 
   const clientConfig = {
     ...sharedConfig,
@@ -59,16 +67,7 @@ module.exports = env => {
     },
     plugins: [
       ...(sharedConfig.plugins || []),
-      // new webpack.NormalModuleReplacementPlugin(/(\.*)\/api\/(\.*)/, function(
-      //   resource
-      // ) {
-      //   console.log("hellloooo");
-      //   resource.request = resource.request.replace(/api/, `/apiMock/`);
-      // }),
-      new webpack.NormalModuleReplacementPlugin(
-        /\.shared\\api\.ts/,
-        `..\\${project}\\src\\client\\apiMock.ts`
-      ),
+      ...mockedApiPlugins,
       new HtmlWebpackPlugin({
         template: "./src/client/index.html",
         title: project,
@@ -77,5 +76,6 @@ module.exports = env => {
       new HtmlWebpackInlineSourcePlugin()
     ]
   };
+
   return [serverConfig, clientConfig];
 };
