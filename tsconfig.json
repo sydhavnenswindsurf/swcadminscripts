@@ -7,7 +7,13 @@
     "noEmit": true,
     "strict": false,
     "isolatedModules": false,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./medlemmercommon",
+      "./swcadmincommon"
+    ]
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "include": ["./medlemmercommon", "./swcadmincommon"]
 }

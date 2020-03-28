@@ -1,11 +1,7 @@
 {
-  "timeZone": "America/New_York",
+  "timeZone": "Europe/Paris",
   "dependencies": {
     "libraries": [{
-      "userSymbol": "medlemmer_common",
-      "libraryId": "1yqnx4ooJpUDNyy0lENalEkNApD7puEi77rHMptBifPLekhsYuT5CVZz_",
-      "version": "6"
-    }, {
       "userSymbol": "swcadmin_common",
       "libraryId": "1MsQ7VEYGOiYtNnds1TX7QNMEv0ncwnyl2q-4AQJVgfB1aUddHVqOBIYs",
       "version": "1"
@@ -16,5 +12,7 @@
     "executeAs": "USER_ACCESSING"
   },
   "exceptionLogging": "STACKDRIVER",
-  "runtimeVersion": "V8"
+  "executionApi": {
+    "access": "ANYONE"
+  }
 }

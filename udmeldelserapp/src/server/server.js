@@ -4,3 +4,6 @@ function doGet(e) {
 function getUdmeldelserAdresses(label) {
   return ServerLib.getUdmeldelserAdresses(label);
 }
+function udmeld(email) {
+  return ServerLib.udmeld(email);
+}

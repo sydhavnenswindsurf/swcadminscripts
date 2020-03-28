@@ -1,6 +1,7 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import { EmailInfo } from "../server/types";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 export interface UdmeldelserListProps {
   mailLabel: string | undefined;
@@ -9,6 +10,8 @@ export interface UdmeldelserListProps {
   notFoundMessages: string[];
   isLoading?: { currentProcessMessage: string };
   bulkUdmeld: () => void;
+  disableUdmeldButton: boolean;
+  errorMessages: string[];
 }
 export const UdmeldelserList: React.FC<UdmeldelserListProps> = ({
   mailLabel,
@@ -16,7 +19,9 @@ export const UdmeldelserList: React.FC<UdmeldelserListProps> = ({
   udmeldtMessages,
   notFoundMessages,
   isLoading,
-  bulkUdmeld
+  bulkUdmeld,
+  disableUdmeldButton,
+  errorMessages
 }) => {
   return (
     <>
@@ -35,21 +40,27 @@ export const UdmeldelserList: React.FC<UdmeldelserListProps> = ({
           </div>
         )}
         <section id="logmessages">
-          <div>
+          <div style={{ color: "green" }}>
             {udmeldtMessages.map(i => (
-              <div>{i}</div>
+              <div key={i}>{i}</div>
             ))}
           </div>
-          <div>
+          <div style={{ color: "yellow" }}>
             {notFoundMessages.map(i => (
-              <div>{i}</div>
+              <div key={i}>{i}</div>
+            ))}
+          </div>
+          <div style={{ color: "red" }}>
+            {errorMessages.map(i => (
+              <div key={i}>{i}</div>
             ))}
           </div>
           {notFoundMessages.length > 0 && renderGuide()}
         </section>
         {isLoading && (
           <>
-            <div>Loading...</div> <span>{isLoading.currentProcessMessage}</span>
+            <CircularProgress size={15} />{" "}
+            <span>{isLoading.currentProcessMessage}</span>
           </>
         )}
         {listOfMails.length > 0 && (
@@ -60,13 +71,19 @@ export const UdmeldelserList: React.FC<UdmeldelserListProps> = ({
             </div>
 
             <div>
-              <Button onClick={e => bulkUdmeld()}>Klik her</Button> hvis du
-              ønsker at markere dem alle som udmeldt.
+              <Button
+                disabled={disableUdmeldButton}
+                color="primary"
+                onClick={e => bulkUdmeld()}
+              >
+                Klik her
+              </Button>{" "}
+              hvis du ønsker at markere dem alle som udmeldt.
             </div>
 
             <ul>
               {listOfMails.map(i => (
-                <li>
+                <li key={`${i.name}+${i.email}`}>
                   {i.name} - {i.email}{" "}
                 </li>
               ))}
