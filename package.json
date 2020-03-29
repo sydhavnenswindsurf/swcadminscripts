@@ -6,6 +6,7 @@
   "scripts": {
     "start:udmeldelserapp": "set AppToStart=udmeldelserapp&& npm run start-local",
     "push:udmeldelserapp": "set AppToStart=udmeldelserapp && npm-run-all -l -p build typecheck -s push open-devurl",
+    "start:kontingentrapportapp": "set AppToStart=kontingentrapportapp&& npm run start-local",
     "push:kontingentrapportapp": "set AppToStart=kontingentrapportapp && npm-run-all -l -p build typecheck -s push open-devurl",
     "start-local": "npm-run-all --parallel -l start \"typecheck --  --watch\"",
     "start": "webpack-dev-server --env.project=%AppToStart% --env.mockApi",

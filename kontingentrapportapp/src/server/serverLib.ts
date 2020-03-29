@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { convertToStringsDate } from "./../../../.shared/server/utilities";
 var MANUEL_REGISTRINGER_SPREADSHEET_ID = PropertiesService.getScriptProperties().getProperty(
   "ManuelRegistreringerSheetId"
 );
@@ -48,9 +49,7 @@ export function searchForLastMailDate(emails) {
         if (a > b) return -1;
         return 0;
       });
-      returnObject.lastActivity = swcadmin_common.convertToStringsDate(
-        sorted[0]
-      );
+      returnObject.lastActivity = convertToStringsDate(sorted[0]);
     }
     returnList.push(returnObject);
   }
@@ -90,7 +89,7 @@ export function getLatestRapports() {
         url: f.getUrl(),
         name: f.getName(),
         id: f.getId(),
-        date: swcadmin_common.convertToStringsDate(f.getLastUpdated())
+        date: convertToStringsDate(f.getLastUpdated())
       };
     });
   return rapporter;
@@ -113,7 +112,7 @@ export function createNewRapport(formObject) {
     url: newRapport.getUrl(),
     name: newRapport.getName(),
     id: newRapport.getId(),
-    date: swcadmin_common.convertToStringsDate(new Date())
+    date: convertToStringsDate(new Date())
   };
 }
 function _addManualIndbetalinger(newRapport) {
