@@ -10,7 +10,7 @@ var CSV_HEADER_FORMAT =
 var _RAPPORTS_FOLDER = "KontingentRapporter";
 
 export function doGet() {
-  var html = HtmlService.createTemplateFromFile("main");
+  var html = HtmlService.createTemplateFromFile("dist/client/index.html");
   return html
     .evaluate()
     .setSandboxMode(HtmlService.SandboxMode.IFRAME)

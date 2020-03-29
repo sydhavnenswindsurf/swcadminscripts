@@ -1,5 +1,5 @@
 function doGet(e) {
-  return HtmlService.createHtmlOutputFromFile("dist/index.html");
+  return HtmlService.createHtmlOutputFromFile("dist/client/index.html");
 }
 function getUdmeldelserAdresses(label) {
   return ServerLib.getUdmeldelserAdresses(label);

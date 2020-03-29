@@ -15,8 +15,7 @@ module.exports = env => {
     mode: NODE_ENV || "development",
     context: path.resolve(__dirname, project),
     output: {
-      filename: "[name].js",
-      path: path.resolve(__dirname, project, "dist")
+      filename: "[name].js"
     },
     resolve: { extensions: [".js", ".jsx", ".tsx", ".ts"] },
     module: {
@@ -42,11 +41,13 @@ module.exports = env => {
     },
     output: {
       ...sharedConfig.output,
-      library: "ServerLib"
+      library: "ServerLib",
+      path: path.resolve(__dirname, project, "dist/server")
     },
     plugins: [
-      ...(sharedConfig.plugins || []),
       new CleanWebpackPlugin(),
+      ...(sharedConfig.plugins || []),
+      // Copies the raw server.js file, that is facade for serverlib (needed to satisfy gapps requirements)
       new CopyPlugin([{ from: "./src/server/server.js" }])
     ]
   };
@@ -65,7 +66,12 @@ module.exports = env => {
     entry: {
       clientApp: "./src/client/clientApp"
     },
+    output: {
+      ...sharedConfig.output,
+      path: path.resolve(__dirname, project, "dist/client")
+    },
     plugins: [
+      new CleanWebpackPlugin(),
       ...(sharedConfig.plugins || []),
       ...mockedApiPlugins,
       new HtmlWebpackPlugin({

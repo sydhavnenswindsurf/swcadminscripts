@@ -10,7 +10,7 @@ const MAIL_COLUMN_ID = 4;
 const UDMELDELSESDATE_COLUMN_ID = "9";
 const PROCESSEDLABEL = "Processeret";
 export function getHtml(e) {
-  return HtmlService.createHtmlOutputFromFile("dist/index.html");
+  return HtmlService.createHtmlOutputFromFile("dist/client/index.html");
 }
 
 export function getUdmeldelserAdresses(label: string): EmailInfo[] {
