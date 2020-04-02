@@ -1,0 +1,3 @@
+Event;Currency;Amount;Date and time;Customer name;MP-number;Comment;TransactionID;Payment point;MyShop-Number;Date;Time
+Payment;DKK;750,00;2020-03-31T23:21:26.0879910+02:00;fornavn1 efternavn1;xxxx 9636;99910525 fornavn1 efternavn1;148E030050388264;SWC;93932;2020-03-31;23.21.26
+Payment;DKK;750,00;2020-03-31T23:15:16.9441027+02:00;fornavn2 efternavn2;xxxx 6538;99910600 fornavn2 efternavn2;082E030050247682;SWC;93932;2020-03-31;23.15.16

@@ -1,5 +1,1 @@
-import { callGoogleApi } from "./../../../.shared/api";
-export function X() {
-  callGoogleApi(() => {}).X();
-}
-X();
+export { callGoogleApi } from "./../../../.shared/api";

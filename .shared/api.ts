@@ -11,3 +11,9 @@ export function callGoogleApi<T>(
     .withSuccessHandler(success)
     .withFailureHandler(failure);
 }
+
+export function mockGoogleApi(endpoint: {}) {
+  return (success, error) => {
+    return endpoint;
+  };
+}

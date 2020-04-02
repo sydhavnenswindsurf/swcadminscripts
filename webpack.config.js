@@ -63,11 +63,18 @@ module.exports = env => {
 
   const clientConfig = {
     ...sharedConfig,
+    devServer: {
+      index: "./client/index.html",
+      open: true
+    },
     entry: {
       clientApp: "./src/client/clientApp"
     },
     output: {
       ...sharedConfig.output,
+      // To support legacy knockout code we export Client side code as global variable
+      // This enables mocking support when running locally because we can mock api.ts
+      library: "ClientLib",
       path: path.resolve(__dirname, project, "dist/client")
     },
     plugins: [
@@ -83,5 +90,5 @@ module.exports = env => {
     ]
   };
 
-  return [serverConfig, clientConfig];
+  return [clientConfig, serverConfig];
 };
