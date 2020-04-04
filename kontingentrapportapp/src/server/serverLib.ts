@@ -1,5 +1,13 @@
 import _ from "lodash";
 import { convertToStringsDate } from "./../../../.shared/server/utilities";
+import {
+  ReportInfo,
+  Report,
+  LastEmailActivity,
+  CreateReportInputFormObject,
+  UploadedFile,
+  ReportPaymentInfo
+} from "./types";
 var MANUEL_REGISTRINGER_SPREADSHEET_ID = PropertiesService.getScriptProperties().getProperty(
   "ManuelRegistreringerSheetId"
 );
@@ -7,6 +15,8 @@ var KONTINGENT_RAPPORT_TEMPLATE =
   "1nUDatf7SxoYOASDrVEeLjwGA2gtsYvS84RcwkaUcxDA";
 var CSV_HEADER_FORMAT =
   '"Dato";"Tekst";"Bel\u00AFb";"Saldo";"Status";"Afstemt"\r\n"01.04.2016";"Jan Aasbjerg Peterse";"700,00";"435.039,07";"Udf\u00AFrt";"Nej"';
+var MOBILE_CSV_HEADER_FORMAT =
+  "Event;Currency;Amount;Date and time;Customer name;MP-number;Comment;TransactionID;Payment point;MyShop-Number;Date;Time";
 var _RAPPORTS_FOLDER = "KontingentRapporter";
 
 export function doGet() {
@@ -36,7 +46,7 @@ export function udmeld(emails) {
   }
   return result;
 }
-export function searchForLastMailDate(emails) {
+export function searchForLastMailDate(emails): LastEmailActivity[] {
   var returnList = [];
   for (var i = 0; i < emails.length; i++) {
     var returnObject = { lastActivity: null, email: emails[i] };
@@ -55,7 +65,7 @@ export function searchForLastMailDate(emails) {
   }
   return returnList;
 }
-export function getStats(id) {
+export function getStats(id): Report {
   var rapport = SpreadsheetApp.openById(id);
   var rapportSheet = rapport.getSheetByName("Rapport");
   var result = rapportSheet
@@ -63,16 +73,13 @@ export function getStats(id) {
     .getValues();
   return result;
 }
-export function getLatestRapports() {
-  var currentYear = new Date().getFullYear();
-  var kontingentRapportFolders = DriveApp.getFoldersByName(_RAPPORTS_FOLDER);
-  var kontingentRapportFolder;
-  if (kontingentRapportFolders.hasNext()) {
-    kontingentRapportFolder = kontingentRapportFolders.next();
-  } else {
-    throw "No kontingent rapport folder found";
-  }
-  var files = [];
+export function getLatestRapports(): ReportInfo[] {
+  const kontingentRapportFolders = DriveApp.getFoldersByName(_RAPPORTS_FOLDER);
+  const kontingentRapportFolder = kontingentRapportFolders.hasNext()
+    ? kontingentRapportFolders.next()
+    : null;
+  if (!kontingentRapportFolder) throw "No kontingent rapport folder found";
+  const files: GoogleAppsScript.Drive.File[] = [];
   var fileIterator = kontingentRapportFolder.getFiles();
   while (fileIterator.hasNext()) {
     files.push(fileIterator.next());
@@ -94,15 +101,34 @@ export function getLatestRapports() {
     });
   return rapporter;
 }
-export function createNewRapport(formObject) {
+export function createNewRapport(formObject: CreateReportInputFormObject) {
+  if (!formObject.mobilepay) throw "No mobilepay csv uploaded";
+
   if (!_isValidCsvFormat(formObject.csv)) {
     throw "Det forventes at konto udtog filen er en semi kolon separeret .csv  fil med eksempel formatet: \n\n" +
       CSV_HEADER_FORMAT;
   }
-  var kontoData = _parseCsv(formObject.csv);
+
+  const mobilePayRawString = formObject.mobilepay.getBlob().getDataAsString();
+  if (!_isValidMobileCsvFormat(mobilePayRawString)) {
+    throw "Det forventes at mobile pay udtog filen er en semi kolon separeret .csv  fil med eksempel formatet: \n\n" +
+      MOBILE_CSV_HEADER_FORMAT;
+  }
+
+  const kontoUdtogData = _parseCsvKontoUdtogFile(
+    formObject.csv.getBlob().getDataAsString()
+  );
+
+  const mobilePayData = _parseMobilePayCsvFile(mobilePayRawString);
+
+  const mergedMobilePayAndKontoUdtogData = _mergeKontoudtogAndCsv(
+    kontoUdtogData,
+    mobilePayData
+  );
+
   var newRapportId = _cloneRapportTemplate();
   var newRapport = SpreadsheetApp.openById(newRapportId);
-  _insertKontoData(kontoData, newRapport);
+  _insertKontoData(mergedMobilePayAndKontoUdtogData, newRapport);
   var medlemmer = medlemmer_common.getMedlemmerSheet();
   _copyIndmeldteData(newRapport, medlemmer);
   _addManualIndbetalinger(newRapport);
@@ -150,7 +176,7 @@ function _setCalculationForAllMembers(newRapport) {
     )
   );
 }
-function _isValidCsvFormat(file) {
+function _isValidCsvFormat(file: UploadedFile) {
   var headerData = file
     .getBlob()
     .getDataAsString()
@@ -162,20 +188,78 @@ function _isValidCsvFormat(file) {
     headerData[2].match(/^"?Bel\Sb"?$/) != null;
   return result;
 }
-function _parseCsv(file) {
-  var result = file
-    .getBlob()
-    .getDataAsString()
+
+export function _isValidMobileCsvFormat(fileContent: string) {
+  var headerData = fileContent.split("\n")[0];
+  return headerData === MOBILE_CSV_HEADER_FORMAT;
+}
+
+export function _parseCsvKontoUdtogFile(
+  fileContent: string
+): ReportPaymentInfo {
+  var result = fileContent
     .split("\n")
+    .filter(row => row !== "")
     .map(row => {
-      var row = row.split(";").map(row => {
-        return row.replace(/^\"/, "").replace(/\"$/, "");
-      });
-      row[2] = parseInt(row[2]);
-      return row;
+      return row
+        .split(";")
+        .map(part => {
+          const unQuoted = part.replace(/^\"/, "").replace(/\"$/, "");
+          // Remove quotes
+          return unQuoted;
+        })
+        .map((part, index) => {
+          // Create excel friendly date
+          return index === 0 && part !== "Dato"
+            ? part
+                .split(".")
+                .reverse()
+                .join("-")
+            : part;
+        })
+        .map((part, index) => {
+          // Translate string for beløb column to int
+          return index === 2 && /^\d+/.test(part) ? parseInt(part) : part;
+        });
     });
   return result;
 }
+export function _parseMobilePayCsvFile(fileContent: string) {
+  // Skip first row that is headers
+  const [_, ...rows] = fileContent
+    .split("\n") // split on new line
+    .filter(row => row !== ""); // remove empty rows
+  return _mapMobilePayToCommonReportFormat(rows);
+}
+
+function _mapMobilePayToCommonReportFormat(
+  mobileCsvFileRows: string[]
+): ReportPaymentInfo {
+  return mobileCsvFileRows.map(row => {
+    const rowParts = row.split(";");
+    return [
+      rowParts[10], //Date
+      rowParts[6], // Comment with memberid and name
+      parseInt(rowParts[2]), // Amount
+      "-",
+      "Fra MobilePay",
+      "Nej"
+    ];
+  });
+}
+
+export function _mergeKontoudtogAndCsv(
+  kontoUdtogData: ReportPaymentInfo,
+  mobilePayData: ReportPaymentInfo
+): ReportPaymentInfo {
+  const [headerRow, ...restOfKontoUdtog] = kontoUdtogData;
+  const allPayments = [...restOfKontoUdtog, ...mobilePayData];
+  const sortedPayments = _.orderBy(allPayments, i => i[0] /* the date */, [
+    "desc"
+  ]);
+  return [headerRow, ...sortedPayments];
+}
+
 function _cloneRapportTemplate() {
   var rapportFolders = DriveApp.getFoldersByName(_RAPPORTS_FOLDER);
   var rapportFolder;
@@ -225,13 +309,6 @@ function test_searchForLastMailDate(email) {
 }
 function include(filename) {
   return HtmlService.createHtmlOutputFromFile(filename).getContent();
-}
-function testcreateNewRapport() {
-  var testfile = DriveApp.getFileById("0B6zVGnjYaDZiQ1NMYmdkbS1Id28");
-  //var data = testfile.getBlob().getDataAsString().split("\n");
-  var result = createNewRapport({
-    csv: testfile
-  });
 }
 function testGetStats() {
   var result = getStats("1eAFkk-YGDBL8DjpLAGnKrioVpFkNWH5toNZi442qtNA");

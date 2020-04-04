@@ -12,6 +12,7 @@ module.exports = env => {
   if (!project) throw Error("no project environment variable set.");
 
   const sharedConfig = {
+    // devtool: "inline-source-map",
     mode: NODE_ENV || "development",
     context: path.resolve(__dirname, project),
     output: {

@@ -9,22 +9,21 @@ const kontoUdtogData = `"Dato";"Tekst";"Beløb";"Saldo";"Status";"Afstemt"
 "01.04.2016";"Jan Aasbjerg Peterse";"700,00";"435.039,07";"Udført";"Nej"
 "01.04.2016";"Jan Aasbjerg Peterse";"700,00";"435.039,07";"Udført";"Nej"
 `;
-describe("serverLib._isValidMobileCsvFormat", () => {
-  test("returns true if header is correct", () => {
+describe("serverLib._validateMobileCsvFormat", () => {
+  test("Does not throw error if header is correct", () => {
     // Loading library inside test method in order to be able to mock global variable
     const serverLib = require("./serverLib");
-    const result: ReportPaymentInfo = serverLib._isValidMobileCsvFormat(
-      mobileSampleData
-    );
-    expect(result).toBeTruthy();
+    expect(() =>
+      serverLib._validateMobileCsvFormat(mobileSampleData)
+    ).not.toThrowError();
   });
-  test("returns false if header is incorrect", () => {
+  test("Throws error if header is incorrect", () => {
     // Loading library inside test method in order to be able to mock global variable
     const serverLib = require("./serverLib");
-    const result: ReportPaymentInfo = serverLib._isValidMobileCsvFormat(
-      "Somewrongfile"
-    );
-    expect(result).toBeFalsy();
+
+    expect(() =>
+      serverLib._validateMobileCsvFormat("Somewrongfile")
+    ).toThrowError();
   });
 });
 test("_parseMobilePayCsvFile", () => {
