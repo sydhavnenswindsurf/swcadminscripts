@@ -110,11 +110,7 @@ export function createNewRapport(formObject: CreateReportInputFormObject) {
   }
 
   const mobilePayRawString = formObject.mobilepay.getBlob().getDataAsString();
-  if (!_isValidMobileCsvFormat(mobilePayRawString)) {
-    throw "Det forventes at mobile pay udtog filen er en semi kolon separeret .csv  fil med eksempel formatet: \n\n" +
-      MOBILE_CSV_HEADER_FORMAT;
-  }
-
+  // _validateMobileCsvFormat(mobilePayRawString);
   const kontoUdtogData = _parseCsvKontoUdtogFile(
     formObject.csv.getBlob().getDataAsString()
   );
@@ -189,9 +185,14 @@ function _isValidCsvFormat(file: UploadedFile) {
   return result;
 }
 
-export function _isValidMobileCsvFormat(fileContent: string) {
+export function _validateMobileCsvFormat(fileContent: string) {
   var headerData = fileContent.split("\n")[0];
-  return headerData === MOBILE_CSV_HEADER_FORMAT;
+  if (headerData !== MOBILE_CSV_HEADER_FORMAT) {
+    throw `Det forventes at mobile pay udtog filen er en semi kolon separeret .csv  fil med eksempel formatet:
+    ${MOBILE_CSV_HEADER_FORMAT}
+    men header linjen på det sendte var:
+    ${headerData}.`;
+  }
 }
 
 export function _parseCsvKontoUdtogFile(
@@ -272,7 +273,10 @@ function _cloneRapportTemplate() {
     .makeCopy("Kontingent opgørelse " + new Date(), rapportFolder)
     .getId();
 }
-function _copyIndmeldteData(newRapport, medlemmer) {
+function _copyIndmeldteData(
+  newRapport: GoogleAppsScript.Spreadsheet.Spreadsheet,
+  medlemmer: GoogleAppsScript.Spreadsheet.Sheet
+) {
   var currentYear = new Date().getFullYear();
   var targetSheet = newRapport.getSheetByName("Medlemsliste").clear();
   var valuesToCopy = medlemmer
@@ -280,7 +284,9 @@ function _copyIndmeldteData(newRapport, medlemmer) {
     .getValues()
     .filter((row, index) => {
       //filter out members indmeldt in current year
-      var indmeldDate = row[medlemmer_common.INDMELDELSESDATO_COLUMNID - 1];
+      const indmeldDate: Date = row[
+        medlemmer_common.INDMELDELSESDATO_COLUMNID - 1
+      ] as Date;
       if (
         indmeldDate != null &&
         indmeldDate.getFullYear !== undefined &&
@@ -294,7 +300,7 @@ function _copyIndmeldteData(newRapport, medlemmer) {
       );
     });
   targetSheet
-    .getRange(2, 1, valuesToCopy.length, valuesToCopy[0].length)
+    .getRange(1, 1, valuesToCopy.length, valuesToCopy[0].length)
     .setValues(valuesToCopy);
 }
 function _insertKontoData(kontoData, newRapport) {

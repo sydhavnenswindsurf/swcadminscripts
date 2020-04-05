@@ -1,5 +1,5 @@
 declare module medlemmer_common {
-  function getMedlemmerSheet(): any;
+  function getMedlemmerSheet(): GoogleAppsScript.Spreadsheet.Sheet;
   var INDMELDELSESDATO_COLUMNID: number;
   var UDMELDT_COLUMN_ID: number;
   var UDMELDELSES_COLUMNHEADER: string;
