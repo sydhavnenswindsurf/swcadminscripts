@@ -6,7 +6,7 @@ import {
   LastEmailActivity,
   CreateReportInputFormObject,
   UploadedFile,
-  ReportPaymentInfo
+  ReportPaymentInfo,
 } from "./types";
 var MANUEL_REGISTRINGER_SPREADSHEET_ID = PropertiesService.getScriptProperties().getProperty(
   "ManuelRegistreringerSheetId"
@@ -41,7 +41,7 @@ export function udmeld(emails) {
     medlemmer_common.setUdmeldtStatus(email);
     result.push({
       email: email,
-      status: "udmeldt"
+      status: "udmeldt",
     });
   }
   return result;
@@ -50,7 +50,7 @@ export function searchForLastMailDate(emails): LastEmailActivity[] {
   var returnList = [];
   for (var i = 0; i < emails.length; i++) {
     var returnObject = { lastActivity: null, email: emails[i] };
-    var result = GmailApp.search("from:" + emails[i]).map(thread => {
+    var result = GmailApp.search("from:" + emails[i]).map((thread) => {
       return thread.getLastMessageDate();
     });
     if (result.length > 0) {
@@ -86,17 +86,17 @@ export function getLatestRapports(): ReportInfo[] {
   }
   //sort by newest files, and return latest 5 and map to gui friendly object
   var rapporter = _(files)
-    .sortBy(f => {
+    .sortBy((f) => {
       return f.getLastUpdated();
     })
     .takeRight(5)
     .value()
-    .map(f => {
+    .map((f) => {
       return {
         url: f.getUrl(),
         name: f.getName(),
         id: f.getId(),
-        date: convertToStringsDate(f.getLastUpdated())
+        date: convertToStringsDate(f.getLastUpdated()),
       };
     });
   return rapporter;
@@ -105,8 +105,10 @@ export function createNewRapport(formObject: CreateReportInputFormObject) {
   if (!formObject.mobilepay) throw "No mobilepay csv uploaded";
 
   if (!_isValidCsvFormat(formObject.csv)) {
-    throw "Det forventes at konto udtog filen er en semi kolon separeret .csv  fil med eksempel formatet: \n\n" +
-      CSV_HEADER_FORMAT;
+    throw (
+      "Det forventes at konto udtog filen er en semi kolon separeret .csv  fil med eksempel formatet: \n\n" +
+      CSV_HEADER_FORMAT
+    );
   }
 
   const mobilePayRawString = formObject.mobilepay.getBlob().getDataAsString();
@@ -134,7 +136,7 @@ export function createNewRapport(formObject: CreateReportInputFormObject) {
     url: newRapport.getUrl(),
     name: newRapport.getName(),
     id: newRapport.getId(),
-    date: convertToStringsDate(new Date())
+    date: convertToStringsDate(new Date()),
   };
 }
 function _addManualIndbetalinger(newRapport) {
@@ -149,20 +151,22 @@ function _addManualIndbetalinger(newRapport) {
   var calculationSource = targetSheet.getRange(2, 6, 1, 1);
   calculationSource.copyTo(targetSheet.getRange(3, 6, data.length, 1));
 }
-function _setCalculationForAllMembers(newRapport) {
-  var rapportSheet = newRapport.getSheetByName("Rapport");
-  //
-  //  sheet.insertRows(3, medlemmer.getLastRow()-2);
-  //
-  var calculationRange = rapportSheet.getRange(
+function _setCalculationForAllMembers(
+  newRapport: GoogleAppsScript.Spreadsheet.Spreadsheet
+) {
+  const rapportSheet = newRapport.getSheetByName("Rapport");
+
+  // Get range for the prefilled calculation in rapport sheet (1 row)
+  const calculationRange = rapportSheet.getRange(
     2,
     1,
     1,
     rapportSheet.getLastColumn()
   );
-  //
-  var newRapportMedlemsliste = newRapport.getSheetByName("Medlemsliste");
-  var lastCol = calculationRange.getLastColumn();
+  // Then we copy prefilled calculation row into following rows, as many as there are members in medlemsliste
+  // remember medlemsliste has already been filtered so it only has members for previous years (not this year since they have already paid when signing up)
+  const newRapportMedlemsliste = newRapport.getSheetByName("Medlemsliste");
+  const lastCol = calculationRange.getLastColumn();
   calculationRange.copyTo(
     rapportSheet.getRange(
       3,
@@ -173,11 +177,7 @@ function _setCalculationForAllMembers(newRapport) {
   );
 }
 function _isValidCsvFormat(file: UploadedFile) {
-  var headerData = file
-    .getBlob()
-    .getDataAsString()
-    .split("\n")[0]
-    .split(";");
+  var headerData = file.getBlob().getDataAsString().split("\n")[0].split(";");
   var result =
     headerData[0].match(/^"?Dato"?$/) != null &&
     headerData[1].match(/^"?Tekst"?$/) != null &&
@@ -200,11 +200,11 @@ export function _parseCsvKontoUdtogFile(
 ): ReportPaymentInfo {
   var result = fileContent
     .split("\n")
-    .filter(row => row !== "")
-    .map(row => {
+    .filter((row) => row !== "")
+    .map((row) => {
       return row
         .split(";")
-        .map(part => {
+        .map((part) => {
           const unQuoted = part.replace(/^\"/, "").replace(/\"$/, "");
           // Remove quotes
           return unQuoted;
@@ -212,10 +212,7 @@ export function _parseCsvKontoUdtogFile(
         .map((part, index) => {
           // Create excel friendly date
           return index === 0 && part !== "Dato"
-            ? part
-                .split(".")
-                .reverse()
-                .join("-")
+            ? part.split(".").reverse().join("-")
             : part;
         })
         .map((part, index) => {
@@ -229,14 +226,14 @@ export function _parseMobilePayCsvFile(fileContent: string) {
   // Skip first row that is headers
   const [_, ...rows] = fileContent
     .split("\n") // split on new line
-    .filter(row => row !== ""); // remove empty rows
+    .filter((row) => row !== ""); // remove empty rows
   return _mapMobilePayToCommonReportFormat(rows);
 }
 
 function _mapMobilePayToCommonReportFormat(
   mobileCsvFileRows: string[]
 ): ReportPaymentInfo {
-  return mobileCsvFileRows.map(row => {
+  return mobileCsvFileRows.map((row) => {
     const rowParts = row.split(";");
     return [
       rowParts[10], //Date
@@ -244,7 +241,7 @@ function _mapMobilePayToCommonReportFormat(
       parseInt(rowParts[2]), // Amount
       "-",
       "Fra MobilePay",
-      "Nej"
+      "Nej",
     ];
   });
 }
@@ -255,8 +252,8 @@ export function _mergeKontoudtogAndCsv(
 ): ReportPaymentInfo {
   const [headerRow, ...restOfKontoUdtog] = kontoUdtogData;
   const allPayments = [...restOfKontoUdtog, ...mobilePayData];
-  const sortedPayments = _.orderBy(allPayments, i => i[0] /* the date */, [
-    "desc"
+  const sortedPayments = _.orderBy(allPayments, (i) => i[0] /* the date */, [
+    "desc",
   ]);
   return [headerRow, ...sortedPayments];
 }

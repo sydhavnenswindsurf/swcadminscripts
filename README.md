@@ -14,3 +14,5 @@ Følgende apps er på regular konto (pga problemer der var mistet adgang til dat
 - indmeldelse
 
 Resten er på data kontoen stadigvæk
+
+Dog er nogen af common modulerne 2 steder, og det er forskelligt hvilke apps bruger hvilke common
